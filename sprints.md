@@ -78,12 +78,12 @@ python -m challenge.coverage compare --baseline results --candidate outputs/fina
 
 | Sprint | Heures | AI/Data (Toi) | Industrial Eng (Quantique) | Cybersecurity (Fiabilité) |
 | :--- | :--- | :--- | :--- | :--- |
-| **0 : Setup** | 0–2 | Code mis à jour (`models.py`, `coverage.py`). Vérifier `coverage check`. | Cloner, setup `.venv`, tester 1 run rapide. | Créer/vérifier compte IBM Quantum, tokens et accès aux backends. |
-| **1 : Build & Test** | 2–8 | Valider l'agrégation des résultats. Vérifier convergence des pertes. | Vérifier propriétés quantiques ($L=1, 2, 3$) : profondeur, CX, temps/évaluation. | Écrire les tests de perturbation (bruit gaussien, feature drop). Tester 1 inférence IBM. |
-| **2 : Screen** | 8–14 | Coordonner le screening Seed 0 sur les 3 laptops ($L=1, 2, 3$). | Mesurer les temps d'exécution et ressources de circuit. | Exécuter le bootstrap spatial (`coverage compare`). |
+| **0 : Setup** | 0–2 | Code mis à jour (`models.py`, `coverage.py`). Vérifier `coverage check`. | Cloner, setup `.venv`, tester 1 run rapide. | Créer/vérifier compte IBM Quantum, tokens et accès aux backends. ✅ *Fait : compte `ibm_quantum_platform` vérifié (ibm_fez, ibm_kingston, ibm_marrakesh), `python -m challenge.ibm_check`.* |
+| **1 : Build & Test** | 2–8 | Valider l'agrégation des résultats. Vérifier convergence des pertes. | Vérifier propriétés quantiques ($L=1, 2, 3$) : profondeur, CX, temps/évaluation. | Écrire les tests de perturbation (bruit gaussien, feature drop). Tester 1 inférence IBM. ✅ *Fait : `challenge/robustness.py` (QNN vs MLP) + `challenge/qk_reliability.py` ; 1ʳᵉ inférence IBM `dc01gtinj2vs73dda5l0`.* |
+| **2 : Screen** | 8–14 | Coordonner le screening Seed 0 sur les 3 laptops ($L=1, 2, 3$). | Mesurer les temps d'exécution et ressources de circuit. | Exécuter le bootstrap spatial (`coverage compare`). ✅ *Fait : bootstrap spatial apparié (18 blocs, 2000 tirages) dans `challenge/qk_run.py`.* |
 | **GEL** | **14h** | **Choix définitif du meilleur $L$ ($L=2$ ou $3$) et du contrôle. Plus aucune modification de code.** | | |
-| **3 : Final Runs** | 14–19 | Exécuter seeds 0, 1, 2 sur le modèle gelé (sur 1 seule machine). | Générer les graphiques de trade-off (F1 vs profondeur, F1 vs temps). | Lancer le job IBM Quantum vérifié (10–20 échantillons) pour le **bonus +5**. |
-| **4 : Package** | 19–23 | Assembler le notebook final propre qui lit les `outputs/` et affiche tout. | Rédiger les **3 à 5 slides** de présentation. | Tester la reproductibilité sur un clone propre (vérifier tous les checksums). |
+| **3 : Final Runs** | 14–19 | Exécuter seeds 0, 1, 2 sur le modèle gelé (sur 1 seule machine). | Générer les graphiques de trade-off (F1 vs profondeur, F1 vs temps). | Lancer le job IBM Quantum vérifié (10–20 échantillons) pour le **bonus +5**. ✅ *Fait : 10 échantillons sur ibm_kingston (jobs `dc01ihanj2vs73dda82g`, `dc027sls2omc7388l0q0`), 381 s.* |
+| **4 : Package** | 19–23 | Assembler le notebook final propre qui lit les `outputs/` et affiche tout. | Rédiger les **3 à 5 slides** de présentation. | Tester la reproductibilité sur un clone propre (vérifier tous les checksums). ✅ *Fait : clone propre + `.venv` neuf → checksums OK et `outputs/qk` reproduit à l’identique (après correctif `.gitattributes`).* |
 | **Buffer** | 23–24 | Relecture finale, vérification des fichiers de soumission et des slides, soumission. | | |
 
 
@@ -131,3 +131,49 @@ def run_robustness_test(qnn_model, classical_model, X_val, y_val, labels):
         }
     return results
 ```
+
+### ✅ Résultats (exécuté : seeds 0, 1, 2 · L = h = 1, 2, 3 · 5 tirages de bruit partagés par tous les modèles)
+Commande : `python -m challenge.robustness --layers 1 2 3` (ou un processus par L/seed avec `--seeds`, puis `--report`). Sorties : `outputs/robustness/robustness.json`, `fig_robustness.png`.
+Feature drop = une bande satellite brute remplacée par sa moyenne d'entraînement (nuage / canal perdu), plus réaliste que la mise à zéro d'une composante PCA. ΔF1 = F1 propre − F1 dégradé (plus haut = moins robuste), moyenne ± écart-type sur les seeds.
+
+| Modèle | F1 propre | ΔF1 σ=0.05 | ΔF1 σ=0.10 | ΔF1 σ=0.20 | ΔF1 moyen par bande (pire) |
+| :--- | ---: | ---: | ---: | ---: | :--- |
+| `reference` | 0.880 ± 0.000 | +0.001 ± 0.000 | +0.003 ± 0.000 | +0.011 ± 0.000 | 0.078 (NDVI) |
+| `qnn_L1` | 0.856 ± 0.006 | +0.006 ± 0.006 | -0.000 ± 0.005 | +0.006 ± 0.004 | 0.026 (NDVI) |
+| `mlp_h1` | 0.581 ± 0.106 | -0.001 ± 0.004 | +0.008 ± 0.011 | +0.019 ± 0.010 | 0.026 (B12) |
+| `qnn_L2` | 0.819 ± 0.007 | +0.001 ± 0.002 | +0.009 ± 0.004 | +0.030 ± 0.009 | 0.033 (NDVI) |
+| `mlp_h2` | 0.880 ± 0.021 | +0.005 ± 0.006 | +0.007 ± 0.009 | +0.018 ± 0.013 | 0.022 (B12) |
+| `qnn_L3` | 0.819 ± 0.065 | -0.001 ± 0.009 | +0.009 ± 0.017 | +0.043 ± 0.016 | 0.028 (B12) |
+| `mlp_h3` | 0.855 ± 0.009 | +0.003 ± 0.003 | +0.001 ± 0.004 | +0.013 ± 0.002 | 0.012 (B12) |
+
+**Conclusion honnête :**
+- **σ = 0.05 et 0.10 (le protocole) :** toutes les chutes sont ≤ 0.01, du même ordre que la variation entre seeds. Aucun modèle n'est démontré plus robuste.
+- **σ = 0.20 :** les QNN profonds chutent **plus** que leurs MLP appariés (L=2 : 0.030 vs 0.018 ; L=3 : 0.043 vs 0.013). Seul le QNN L=1 reste très stable (0.006), mais son contrôle h=1 est un modèle faible (F1 0.581 ± 0.106), donc la comparaison L=1 n'est pas équitable en capacité.
+- **Bandes manquantes :** B12 et NDVI sont les bandes critiques pour tous les modèles 4-PCA. La référence (13 bandes brutes) est la plus sensible en moyenne (perte de NDVI, B12 ou B6).
+- **Message pour les slides :** « pas de robustesse quantique supplémentaire mesurée ; plus de profondeur rend le QNN plus sensible au bruit fort ». Il ne faut pas annoncer d'avantage quantique.
+
+---
+
+## 6. IBM Quantum : accès et bonus +5 (Mission Cybersecurity)
+
+### Configurer son accès (sans exposer le token)
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-hardware.txt
+.\.venv\Scripts\python.exe -m challenge.ibm_check --save   # demande la clé API en saisie masquée
+.\.venv\Scripts\python.exe -m challenge.ibm_check          # backends, files d'attente, quota restant
+```
+- La clé API se crée sur **https://quantum.cloud.ibm.com**. Le canal `ibm_quantum` est retiré : il faut utiliser `ibm_quantum_platform`.
+- Ne jamais coller le token dans une commande (`token='...'`), car il reste dans l'historique du terminal. Il est stocké dans `~/.qiskit/qiskit-ibm.json`, hors du dépôt (`.qiskit/`, `.env` et `*.key` sont dans `.gitignore`).
+- Avoir accès aux backends **ne suffit pas** pour le bonus : le jury demande un job vérifié (backend, job ID et comparaison avec un simulateur idéal).
+
+### Ce qui a été fait (inférence uniquement, aucun entraînement sur le matériel)
+| | Valeur |
+| :--- | :--- |
+| Backend | `ibm_kingston` (Heron, 156 qubits) |
+| Jobs | `dc01ihanj2vs73dda82g` (3 champs, 1000 shots, 573 circuits), `dc027sls2omc7388l0q0` (7 champs, 500 shots, 1337 circuits) |
+| Temps machine | 381 s sur 600 s/mois (plan Open) |
+| Bonnes classes sur 10 champs | exact 10/10 · simulateur idéal (mêmes shots) 7/10 · matériel corrigé 5/10 |
+
+Chaque champ correspond à 190 circuits compute–uncompute (un par vecteur de support), plus 1 circuit de calibration U(x)†U(x) protégé par une barrière, sinon le transpileur le supprime. La valeur K corrigée de ibm_kingston colle au simulateur idéal à shots finis, mais le SVM exige une précision de noyau bien plus grande : même en idéal, il faut 10⁵ shots pour atteindre environ 0.85 de macro-F1.
+Commandes : `python -m challenge.qk_hardware submit|analyze|shots|summary`. Tous les rapports sont dans `outputs/qk/hardware/`.
+
