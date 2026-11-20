@@ -8,11 +8,18 @@ import pandas as pd
 ROOT=Path(__file__).resolve().parents[1]
 
 
+def file_sha256(path):
+    path=Path(path);content=path.read_bytes()
+    if path.suffix.lower() in {'.csv','.json','.md'}:
+        content=content.replace(b'\r\n',b'\n')
+    return hashlib.sha256(content).hexdigest()
+
+
 def load_data(root=ROOT):
     root=Path(root);data=root/'data'
     manifest=json.loads((data/'manifest.json').read_text())
     for name,digest in manifest['files'].items():
-        if hashlib.sha256((data/name).read_bytes()).hexdigest()!=digest:
+        if file_sha256(data/name)!=digest:
             raise ValueError(f'Release checksum mismatch: {name}')
     tables={split:pd.read_csv(data/f'{split}.csv') for split in ['train','validation','test']}
     seen=set();features=manifest['features'];labels=manifest['labels']

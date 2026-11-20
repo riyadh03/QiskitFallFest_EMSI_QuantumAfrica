@@ -11,7 +11,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.dummy import DummyClassifier
-from .data import ROOT,load_data
+from .data import ROOT,load_data,file_sha256
 from .classical import reference
 from .models import QuantumClassifier,MatchedHead
 from .metrics import score
@@ -20,15 +20,12 @@ LABELS=['alfalfa','maize','wheat']
 MODELS=['reference','matched_head','qnn']
 
 
-def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-
-
 def training_rows(size=None,extension_dir=None):
     tables,_,manifest,_=load_data();base=tables['train'];train=base
     if extension_dir:
         folder=Path(extension_dir);e=json.loads((folder/'manifest.json').read_text())
         if e['labels']!=LABELS or e['features']!=manifest['features']:raise ValueError('Extension schema differs')
-        if sha(folder/'train.csv')!=e['files']['train.csv']:raise ValueError('Extension checksum mismatch')
+        if file_sha256(folder/'train.csv')!=e['files']['train.csv']:raise ValueError('Extension checksum mismatch')
         for split in ['validation','test']:
             if e[f'{split}_sha256']!=manifest['files'][f'{split}.csv']:raise ValueError('Evaluation split changed')
         audit=e['organizer_audit']
