@@ -85,3 +85,49 @@ python -m challenge.coverage compare --baseline results --candidate outputs/fina
 | **3 : Final Runs** | 14–19 | Exécuter seeds 0, 1, 2 sur le modèle gelé (sur 1 seule machine). | Générer les graphiques de trade-off (F1 vs profondeur, F1 vs temps). | Lancer le job IBM Quantum vérifié (10–20 échantillons) pour le **bonus +5**. |
 | **4 : Package** | 19–23 | Assembler le notebook final propre qui lit les `outputs/` et affiche tout. | Rédiger les **3 à 5 slides** de présentation. | Tester la reproductibilité sur un clone propre (vérifier tous les checksums). |
 | **Buffer** | 23–24 | Relecture finale, vérification des fichiers de soumission et des slides, soumission. | | |
+
+
+---
+
+## 5. Tests de Perturbation & Robustesse (Mission Cybersecurity)
+
+### Pourquoi ce test donne un avantage compétitif décisif ?
+En télédétection satellitaire, les données réelles sont souvent imparfaites (couverture nuageuse, bruit de capteur optique).
+Ce test évalue la **résilience en inférence** : *Face à des données dégradées, quel modèle s'effondre le plus vite ?*
+
+### Le Protocole Expérimental (100% équitable)
+1. Les modèles (QNN et Contrôle Classique MLP) sont **déjà entraînés sur les données propres** (on ne ré-entraîne pas).
+2. On applique **exactement la même dégradation** au jeu de validation pour les deux modèles :
+   - **Baseline propre :** validation standard.
+   - **Bruit de capteur faible :** ajout de bruit gaussien $\mathcal{N}(0, \sigma=0.05)$.
+   - **Bruit de capteur fort :** ajout de bruit gaussien $\mathcal{N}(0, \sigma=0.10)$.
+   - **Feature Drop (Nuage/Perte de canal) :** mise à zéro d'une composante spectrale.
+3. On mesure la chute de Macro-F1 :
+   $$\Delta \text{F1} = \text{F1}_{\text{clean}} - \text{F1}_{\text{noisy}}$$
+   Si le QNN résiste mieux au bruit que le MLP (dégradation plus faible), vous avez découvert et prouvé une propriété scientifique majeure pour vos slides !
+
+### Script de test rapide à exécuter :
+```python
+import numpy as np
+from challenge.metrics import score
+
+def run_robustness_test(qnn_model, classical_model, X_val, y_val, labels):
+    results = {}
+    rng = np.random.default_rng(2026)
+    
+    scenarios = {
+        'clean': X_val,
+        'noise_0.05': X_val + rng.normal(0, 0.05, X_val.shape),
+        'noise_0.10': X_val + rng.normal(0, 0.10, X_val.shape),
+        'drop_feature_0': np.column_stack([np.zeros(len(X_val)), X_val[:, 1:]])
+    }
+    
+    for name, X_test in scenarios.items():
+        pred_q = qnn_model.predict(X_test)
+        pred_c = classical_model.predict(X_test)
+        results[name] = {
+            'qnn_macro_f1': score(y_val, pred_q, labels)['macro_f1'],
+            'classical_macro_f1': score(y_val, pred_c, labels)['macro_f1']
+        }
+    return results
+```
