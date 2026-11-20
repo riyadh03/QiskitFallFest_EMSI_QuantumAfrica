@@ -52,7 +52,7 @@ def training_rows(size=None,extension_dir=None):
     return train,tables['validation'],manifest
 
 
-def train(size,results,extension_dir=None):
+def train(size,results,extension_dir=None,layers=1,hidden_units=1,seeds=None):
     results=Path(results)
     if results.resolve()==(ROOT/'results').resolve():raise ValueError('Supplied reference results cannot be overwritten; use outputs/')
     t,v,m=training_rows(size,extension_dir);F=m['features'];results.mkdir(parents=True,exist_ok=True)
@@ -60,10 +60,11 @@ def train(size,results,extension_dir=None):
     start=perf_counter();A=prep.fit_transform(t[F].to_numpy());B=prep.transform(v[F].to_numpy());prep_time=perf_counter()-start
     records=[]
     training_digest=hashlib.sha256(t.to_csv(index=False).encode()).hexdigest()
-    for seed in [0,1,2]:
+    run_seeds = [0, 1, 2] if seeds is None or len(seeds) == 0 else seeds
+    for seed in run_seeds:
         for name in ['dummy_majority','dummy_stratified']+MODELS:
-            if name=='qnn':model=QuantumClassifier(LABELS,encoding='ry',max_evals=100);X,D=A,B
-            elif name=='matched_head':model=MatchedHead(LABELS,100);X,D=A,B
+            if name=='qnn':model=QuantumClassifier(LABELS,encoding='ry',max_evals=100,layers=layers);X,D=A,B
+            elif name=='matched_head':model=MatchedHead(LABELS,hidden_units=hidden_units,max_evals=100);X,D=A,B
             elif name=='reference':model=reference(seed);X,D=t[F].to_numpy(),v[F].to_numpy()
             else:model=DummyClassifier(strategy='most_frequent' if name=='dummy_majority' else 'stratified',random_state=seed);X,D=t[F].to_numpy(),v[F].to_numpy()
             start=perf_counter()
@@ -121,12 +122,18 @@ def compare(baseline,candidate,samples=2000):
 def main():
     parser=argparse.ArgumentParser();sub=parser.add_subparsers(dest='command',required=True)
     check=sub.add_parser('check');check.add_argument('--extension-dir',type=Path)
-    fit=sub.add_parser('train');fit.add_argument('--size',type=int);fit.add_argument('--extension-dir',type=Path);fit.add_argument('--results',type=Path,required=True)
+    fit=sub.add_parser('train')
+    fit.add_argument('--size',type=int)
+    fit.add_argument('--extension-dir',type=Path)
+    fit.add_argument('--results',type=Path,required=True)
+    fit.add_argument('--layers',type=int,default=1,help='Data re-uploading layers L (default 1)')
+    fit.add_argument('--hidden-units',type=int,default=1,help='Classical MLP control hidden units h (default 1)')
+    fit.add_argument('--seeds',type=int,nargs='*',default=[0,1,2],help='Seeds to run (default: 0 1 2)')
     comp=sub.add_parser('compare');comp.add_argument('--baseline',type=Path,required=True);comp.add_argument('--candidate',type=Path,required=True)
     args=parser.parse_args()
     if args.command=='check':
         t,v,m=training_rows(extension_dir=args.extension_dir);print(json.dumps({'train':len(t),'validation':len(v),'test':m['rows']['test'],'temporal_policy':m['temporal_policy'],'file_checks':'passed'},indent=2))
-    elif args.command=='train':train(args.size,args.results,args.extension_dir)
+    elif args.command=='train':train(args.size,args.results,args.extension_dir,layers=args.layers,hidden_units=args.hidden_units,seeds=args.seeds)
     else:print(json.dumps(compare(args.baseline,args.candidate),indent=2))
 
 
