@@ -1,17 +1,21 @@
 <p align="center">
   <img src="assets/emsi-logo.webp" alt="EMSI — École Marocaine des Sciences de l’Ingénieur" height="58">
   &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/team_logo.png" alt="Team Q³ (Quantum Cubed)" height="68">
+  &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/quantum-africa-logo.png" alt="Quantum Africa" height="58">
 </p>
 
 # Moroccan Crop Classification Challenge
 ### Qiskit Fall Fest · EMSI · Quantum Africa
+### 👥 Team **Q³ (Quantum Cubed)**
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Qiskit 2.6.2](https://img.shields.io/badge/qiskit-2.6.2-613399.svg)](https://qiskit.org/)
 [![IBM Quantum Kingston](https://img.shields.io/badge/IBM%20Hardware-ibm__kingston%20(Bonus%20%2B5)-0062ff.svg)](https://quantum.ibm.com/)
 [![Final Macro-F1](https://img.shields.io/badge/Validation%20Macro--F1-0.9533-brightgreen.svg)](#benchmark-des-5-architectures)
 [![Submission Model](https://img.shields.io/badge/Submitted%20Model-Calibrated%20Decision%20Fusion-purple.svg)](challenge/submission.py)
+[![Team](https://img.shields.io/badge/Team-Q%C2%B3%20(Quantum%20Cubed)-FF6B6B.svg)](#-team-q-quantum-cubed)
 
 ---
 
@@ -289,6 +293,20 @@ Aesthetic: Ultra-clean technical infographic, crisp vector diagrams, sharp glowi
 ```text
 technical scientific architecture schematic of a quantum-classical hybrid machine learning pipeline for satellite crop classification, horizontal workflow, Sentinel-2 satellite 13 bands to PCA reduction block, splitting into 8-qubit quantum circuit with Hadamard and RZZ gates glowing purple and classical RBF SVM glowing cyan, converging into a calibrated softmax decision fusion node, outputting three crop badges alfalfa maize wheat with 95.3% accuracy, dark navy background, Nature scientific illustration style, vector infographic, clean lines, crisp typography, high contrast, 8k resolution --ar 16:9 --style raw --v 6.0
 ```
+
+---
+
+## 👥 Team Q³ (Quantum Cubed)
+
+<p align="center">
+  <img src="assets/team_logo.png" alt="Team Q³ (Quantum Cubed) Logo" width="130">
+</p>
+
+| Membre | Rôle & Contributions | Contact & Profils |
+|---|---|---|
+| **AYOGNIDE Riyadh Akorede Atanda** | Lead Quantum Machine Learning & Hardware Execution | [![Email](https://img.shields.io/badge/Email-riyadhscaler%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:riyadhscaler@gmail.com) [![GitHub](https://img.shields.io/badge/GitHub-riyadh03-181717?logo=github&logoColor=white)](https://github.com/riyadh03) |
+| **Adib ZINDINE** | Quantum Circuit Engineering & Classical Baseline Alignment | [![Email](https://img.shields.io/badge/Email-adibzindine%40outlook.com-0078D4?logo=microsoft-outlook&logoColor=white)](mailto:adibzindine@outlook.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Adib%20Zindine-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/adib-zindine) [![GitHub](https://img.shields.io/badge/GitHub-lilrawry-181717?logo=github&logoColor=white)](https://github.com/lilrawry) |
+| **Aymane KILALI** | Feature Space Optimization & Hybrid Decision Fusion | [![Email](https://img.shields.io/badge/Email-Aymanekilali%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:Aymanekilali@gmail.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Aymane%20Kilali-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aymane-kilali-37053525a/) [![GitHub](https://img.shields.io/badge/GitHub-Aymane--k-181717?logo=github&logoColor=white)](https://github.com/Aymane-k) |
 
 ---
 
