@@ -65,6 +65,14 @@ Our team implemented and benchmarked **all 5 core architectural paradigms** sugg
           • Corrige le biais du Blé (92%), consolide le Maïs (98%), bat tous les contrôles (143/150).
 ```
 
+### 📐 Architecture Détaillée du Système
+
+<p align="center">
+  <img src="assets/architecture-diagram.png" alt="Architecture Détaillée du Système Hybride Quantique-Classique" width="900">
+</p>
+
+*Figure : Vue d'ensemble du pipeline hybride — De l'acquisition satellite Sentinel-2 (13 bandes) à la projection orthogonale PCA(8), double traitement en parallèle par Noyau Quantique à 8 qubits (espace de Hilbert dimension 256) et SVM RBF classique matched, convergence dans le nœud de fusion décisionnelle calibrée ($\alpha=0.53$), et classification finale des trois cultures (Luzerne, Maïs, Blé).*
+
 ---
 
 ### 🔬 Optimisation Fine par Balayage du Poids $\alpha$ & Script de Preuve
@@ -245,19 +253,41 @@ Et exécuter [`notebooks/Qiskit_QuantumAfrica_Crop_Challenge.ipynb`](notebooks/Q
 
 ---
 
-## 🎨 Prompt pour Génération d'Image d'Architecture (DALL-E / Midjourney / Nano Banana)
+## 🎨 Génération du Diagramme d'Architecture & Prompt Optimisé
 
-Pour générer un diagramme scientifique et esthétique illustrant l'ensemble de notre pipeline pour les slides et le README, copiez ce prompt dans votre générateur d'image préféré :
+Une fois votre image générée, enregistrez-la simplement sous :  
+📁 `assets/architecture-diagram.png`  
+Elle s'affichera automatiquement dans la section **Architecture Détaillée du Système** ci-dessus.
+
+---
+
+### Option A — Prompt Détaillé pour ChatGPT (DALL-E 3), Gemini, Nano Banana ou Leonardo.ai
 
 ```text
-A high-resolution scientific workflow diagram and technical architecture illustration for a quantum-classical hybrid machine learning system. 
-On the left: Sentinel-2 satellite imagery of Moroccan agricultural crop fields, showing 13 spectral bands flowing into a mathematical PCA dimensionality reduction block (13 dimensions to 8 orthogonal components).
-In the center: The pipeline splits into two parallel streams:
-- Stream A (Top, Glowing Purple): An 8-qubit quantum circuit diagram with Hadamard gates, RZ rotation gates, and subtle RZZ entangling links, projecting data into a 256-dimensional quantum Hilbert space, computing a quantum fidelity kernel matrix.
-- Stream B (Bottom, Tech Orange/Cyan): A classical high-dimensional RBF Gaussian kernel support vector machine.
-On the right: The two decision margins converge into a calibrated Softmax Decision Fusion node with weights alpha=0.53 and (1-alpha)=0.47.
-Final output on the far right: Crisp classification badges showing three vibrant agricultural crops (Alfalfa, Maize, Wheat) with a balanced >=90% recall badge and a digital Moroccan map overlay in the subtle background.
-Style: Sleek modern scientific infographic, clean lines, dark academic background, glowing quantum cybernetics, publication-ready Nature/IEEE format, vector aesthetic, 8k resolution.
+A professional scientific architecture diagram and technical pipeline illustration for a quantum-classical hybrid machine learning system, Nature journal publication style.
+Layout: Horizontal left-to-right engineering workflow on a sleek dark navy tech background (#0a0e17).
+
+1. FAR LEFT (Input): A digital Sentinel-2 Earth observation satellite scanning agricultural fields in Morocco. A stream of 13 colorful spectral bands (labeled B1 to B12 and NDVI) emerges from the satellite imagery.
+2. STEP 2 (Feature Engineering): The 13 bands enter a glowing geometric block labeled "Orthogonal PCA(8)" with a subtle variance curve indicating ">97% Information Preserved".
+3. CENTER (Parallel Dual-Branch Processing): The 8 components split into two parallel streams:
+   - TOP STREAM (Quantum Branch, Glowing Neon Violet/Purple #8A2BE2): An 8-qubit quantum circuit schematic with 8 horizontal wire lines, containing Hadamard [H] blocks, [RZ(2ax)] rotation gates, and [RZZ(2γxx)] linear entangling links. It projects data into a multi-dimensional quantum Hilbert sphere (2^8 = 256 dimensions) and outputs a quantum fidelity kernel matrix K_quantum.
+   - BOTTOM STREAM (Classical Branch, Tech Cyan/Teal #00E5FF): An identical 8-component vector entering a classical high-dimensional Gaussian RBF Kernel SVM with clear decision boundaries.
+4. STEP 4 (Decision Convergence): Both prediction confidence streams converge into a central glowing mathematical fusion node labeled "Calibrated Decision Fusion (P = 0.53·P_quantum + 0.47·P_classical)".
+5. FAR RIGHT (Output): Three crisp, elegant agricultural crop classification badges:
+   - Alfalfa (Emerald Green, 96% Recall)
+   - Maize (Vibrant Gold, 98% Recall)
+   - Wheat (Warm Amber, 92% Recall)
+   With an overarching golden performance trophy badge: "95.33% Accuracy | 0.9533 Macro-F1".
+
+Aesthetic: Ultra-clean technical infographic, crisp vector diagrams, sharp glowing connection lines, modern scientific typography, no clutter, high resolution 8k, photorealistic vector diagram.
+```
+
+---
+
+### Option B — Prompt Optimisé pour Midjourney v6
+
+```text
+technical scientific architecture schematic of a quantum-classical hybrid machine learning pipeline for satellite crop classification, horizontal workflow, Sentinel-2 satellite 13 bands to PCA reduction block, splitting into 8-qubit quantum circuit with Hadamard and RZZ gates glowing purple and classical RBF SVM glowing cyan, converging into a calibrated softmax decision fusion node, outputting three crop badges alfalfa maize wheat with 95.3% accuracy, dark navy background, Nature scientific illustration style, vector infographic, clean lines, crisp typography, high contrast, 8k resolution --ar 16:9 --style raw --v 6.0
 ```
 
 ---
