@@ -1,0 +1,4 @@
+# Quantum Cube CropLab dashboard (optional; not needed to run or judge the submission)
+# Install on top of requirements.txt:  pip install -r requirements-app.txt
+streamlit==1.67.0
+plotly==7.1.0

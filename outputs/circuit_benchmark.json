@@ -1,0 +1,134 @@
+[
+  {
+    "Architecture":"Current (Linear chain, a=0.2, g=0.01)",
+    "QK_F1":0.94,
+    "QK_Acc":0.94,
+    "Hybrid_F1":0.9532580709,
+    "Hybrid_Acc":0.9533333333,
+    "Hybrid_Correct":143,
+    "Wheat_Rec":0.92,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.96
+  },
+  {
+    "Architecture":"Qiskit ZZFeatureMap (reps=1, linear)",
+    "QK_F1":0.3160859812,
+    "QK_Acc":0.3866666667,
+    "Hybrid_F1":0.6283201773,
+    "Hybrid_Acc":0.64,
+    "Hybrid_Correct":96,
+    "Wheat_Rec":0.96,
+    "Maize_Rec":0.36,
+    "Alfalfa_Rec":0.6
+  },
+  {
+    "Architecture":"Custom RY-RX + RZZ",
+    "QK_F1":0.9126810195,
+    "QK_Acc":0.9133333333,
+    "Hybrid_F1":0.9056372549,
+    "Hybrid_Acc":0.9066666667,
+    "Hybrid_Correct":136,
+    "Wheat_Rec":0.82,
+    "Maize_Rec":0.96,
+    "Alfalfa_Rec":0.94
+  },
+  {
+    "Architecture":"Data Re-uploading (2 layers + RY(pi\/4) mixing)",
+    "QK_F1":0.9327136752,
+    "QK_Acc":0.9333333333,
+    "Hybrid_F1":0.9327136752,
+    "Hybrid_Acc":0.9333333333,
+    "Hybrid_Correct":140,
+    "Wheat_Rec":0.86,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.96
+  },
+  {
+    "Architecture":"Circular \/ Ring Entanglement (8 pairs)",
+    "QK_F1":0.94,
+    "QK_Acc":0.94,
+    "Hybrid_F1":0.9532580709,
+    "Hybrid_Acc":0.9533333333,
+    "Hybrid_Correct":143,
+    "Wheat_Rec":0.92,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.96
+  },
+  {
+    "Architecture":"Full All-to-All Entanglement (28 pairs)",
+    "QK_F1":0.9399881165,
+    "QK_Acc":0.94,
+    "Hybrid_F1":0.9465068758,
+    "Hybrid_Acc":0.9466666667,
+    "Hybrid_Correct":142,
+    "Wheat_Rec":0.9,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.96
+  },
+  {
+    "Architecture":"Star Entanglement (Center=Q0, 7 pairs)",
+    "QK_F1":0.9399881165,
+    "QK_Acc":0.94,
+    "Hybrid_F1":0.9465068758,
+    "Hybrid_Acc":0.9466666667,
+    "Hybrid_Correct":142,
+    "Wheat_Rec":0.9,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.96
+  },
+  {
+    "Architecture":"No Entanglement (Product State, gamma=0)",
+    "QK_F1":0.9399881165,
+    "QK_Acc":0.94,
+    "Hybrid_F1":0.9465068758,
+    "Hybrid_Acc":0.9466666667,
+    "Hybrid_Correct":142,
+    "Wheat_Rec":0.9,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.96
+  },
+  {
+    "Architecture":"Bandwidth scaling a=0.05",
+    "QK_F1":0.9056372549,
+    "QK_Acc":0.9066666667,
+    "Hybrid_F1":0.9120609443,
+    "Hybrid_Acc":0.9133333333,
+    "Hybrid_Correct":137,
+    "Wheat_Rec":0.82,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.94
+  },
+  {
+    "Architecture":"Bandwidth scaling a=0.1",
+    "QK_F1":0.9268613528,
+    "QK_Acc":0.9266666667,
+    "Hybrid_F1":0.92,
+    "Hybrid_Acc":0.92,
+    "Hybrid_Correct":138,
+    "Wheat_Rec":0.88,
+    "Maize_Rec":0.94,
+    "Alfalfa_Rec":0.94
+  },
+  {
+    "Architecture":"Bandwidth scaling a=0.3",
+    "QK_F1":0.9262122577,
+    "QK_Acc":0.9266666667,
+    "Hybrid_F1":0.9327136752,
+    "Hybrid_Acc":0.9333333333,
+    "Hybrid_Correct":140,
+    "Wheat_Rec":0.86,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.96
+  },
+  {
+    "Architecture":"Bandwidth scaling a=0.4",
+    "QK_F1":0.9191812865,
+    "QK_Acc":0.92,
+    "Hybrid_F1":0.9191812865,
+    "Hybrid_Acc":0.92,
+    "Hybrid_Correct":138,
+    "Wheat_Rec":0.84,
+    "Maize_Rec":0.98,
+    "Alfalfa_Rec":0.94
+  }
+]

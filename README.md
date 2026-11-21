@@ -140,7 +140,7 @@ Pour déterminer rigoureusement le mélange quantique-classique sans approximati
 
 * **Backend :** `ibm_kingston`, processeur IBM **Heron r2** de 156 qubits (portes natives `cz, rz, sx, x, rzz`), jobs `dc01ihanj2vs73dda82g`, `dc027sls2omc7388l0q0` et `dc0onjinj2vs73deb200` (441 s de QPU au total).
 * **Protocole :** 2 292 circuits compute-uncompute pour 12 parcelles de validation fixes (une ligne de noyau sur les 190 vecteurs de support, plus un circuit auto-apparié par parcelle), 1000 ou 500 shots, Pauli twirling, dynamical decoupling, et correction par le facteur de contraction (*shrink factor*) auto-apparié $\lambda \approx 0.66$–$0.75$. Le SVM est entraîné localement ; seule l'inférence passe sur le QPU.
-* **Découverte NISQ :** L'inférence sur hardware réel est limitée par le bruit d'échantillonnage (*shot noise*), nécessitant $\sim 100\,000$ shots par entrée pour égaler le simulateur exact. Cette observation honnête documente fidèlement les contraintes des processeurs NISQ actuels.
+* **Découverte NISQ :** L'inférence sur hardware réel est limitée par le bruit d'échantillonnage (*shot noise*), D'après l'étude de shots simulée (`outputs/qk/hardware/shots_study.json`, 150 parcelles, 5 répétitions), le macro-F1 du noyau tombe à ≈ 0.51 à 1 000 shots par entrée, et reste à 0.85 (échantillonneur idéal) ou 0.79 (bruit dépolarisant λ = 0.69) même à 100 000 shots, contre 0.94 en simulation exacte. Cette observation documente fidèlement les contraintes des processeurs NISQ actuels.
 
 #### Le modèle soumis (fusion) sur hardware
 Le noyau quantique est la seule partie du modèle soumis qui peut tourner sur un QPU. Nous avons donc rejoué la **fusion complète** ($\alpha = 0.53$) en remplaçant les marges du noyau exact par celles calculées à partir des lignes de noyau mesurées sur `ibm_kingston`. La branche RBF reste classique et tourne en local.
@@ -317,7 +317,15 @@ python -m challenge.coverage check
 python -c "from challenge.submission import Submission; sub = Submission(); print('Modèle prêt : Calibrated Decision Fusion 53% QK + 47% RBF (alpha=0.53)')"
 ```
 
-### 4. Consulter les notebooks
+### 4. Explorer les résultats : application Quantum Cube CropLab (optionnel)
+Une application Streamlit présente toutes les expériences, les benchmarks, la robustesse et l'exécution IBM. Elle lit uniquement les résultats sauvegardés et ne ré-entraîne aucun modèle.
+```bash
+pip install -r requirements-app.txt
+python -m dashboard.export          # une seule fois (~30 s) : exporte les prédictions de la fusion et la robustesse appariée
+streamlit run dashboard/app.py
+```
+
+### 5. Consulter les notebooks
 Ouvrir JupyterLab :
 ```bash
 jupyter lab
@@ -336,8 +344,8 @@ Le travail s'est fait de manière collaborative. Le tableau indique qui a porté
 
 | Membre | Rôle & Contributions | Contact & Profils |
 |---|---|---|
-| **AYOGNIDE Riyadh Akorede Atanda** | **Fusion hybride & benchmark** : idée de la fusion décisionnelle calibrée QK + RBF (le modèle soumis, balayage fin de $\alpha$), benchmark des 5 architectures de `docs/HINTS.md` | [![Email](https://img.shields.io/badge/Email-riyadhscaler%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:riyadhscaler@gmail.com) [![GitHub](https://img.shields.io/badge/GitHub-riyadh03-181717?logo=github&logoColor=white)](https://github.com/riyadh03) |
-| **Adib ZINDINE** | **Noyau quantique** : idée du noyau quantique de fidélité à 8 qubits (QSVM sur PCA(8)), la branche quantique du modèle | [![Email](https://img.shields.io/badge/Email-adibzindine%40outlook.com-0078D4?logo=microsoft-outlook&logoColor=white)](mailto:adibzindine@outlook.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Adib%20Zindine-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/adib-zindine) [![GitHub](https://img.shields.io/badge/GitHub-lilrawry-181717?logo=github&logoColor=white)](https://github.com/lilrawry) |
+| **AYOGNIDE Riyadh Akorede Atanda** | **Fusion hybride & benchmark** : idée de la fusion décisionnelle calibrée QK + RBF (le modèle soumis, balayage fin de $\alpha$), benchmark des 5 architectures de `docs/HINTS.md`, exécution de la fusion sur `ibm_kingston` (job `dc0onjinj2vs73deb200`) et audit de validation | [![Email](https://img.shields.io/badge/Email-riyadhscaler%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:riyadhscaler@gmail.com) [![GitHub](https://img.shields.io/badge/GitHub-riyadh03-181717?logo=github&logoColor=white)](https://github.com/riyadh03) |
+| **Adib ZINDINE** | **Noyau quantique** : idée du noyau quantique de fidélité à 8 qubits (QSVM sur PCA(8)), la branche quantique du modèle ; première exécution sur IBM `ibm_kingston` (protocole compute-uncompute, twirling, facteur de contraction, étude des shots) | [![Email](https://img.shields.io/badge/Email-adibzindine%40outlook.com-0078D4?logo=microsoft-outlook&logoColor=white)](mailto:adibzindine@outlook.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Adib%20Zindine-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/adib-zindine) [![GitHub](https://img.shields.io/badge/GitHub-lilrawry-181717?logo=github&logoColor=white)](https://github.com/lilrawry) |
 | **Aymane KILALI** | **Benchmark des circuits** : exploration des designs de circuit quantique (pistes A–D : feature map, re-uploading, topologie d'intrication, bandwidth ; 11 configurations, `challenge/circuits.py`) | [![Email](https://img.shields.io/badge/Email-Aymanekilali%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:Aymanekilali@gmail.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Aymane%20Kilali-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aymane-kilali-37053525a/) [![GitHub](https://img.shields.io/badge/GitHub-Aymane--k-181717?logo=github&logoColor=white)](https://github.com/Aymane-k) |
 
 ---

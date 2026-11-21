@@ -1,0 +1,120 @@
+{
+  "title": "Benchmark Exhaustif des Alternatives Architecturales",
+  "dataset": {
+    "train": 914,
+    "validation": 150,
+    "features": 13
+  },
+  "architectures": [
+    {
+      "name": "QNN Variationnel (Re-uploading, L=1)",
+      "type": "Quantique Pur (Angle Parametré)",
+      "features": "4 PCA",
+      "qubits": 4,
+      "params": 8,
+      "macro_f1": 0.8062,
+      "accuracy": 0.8067,
+      "wheat_recall": 0.9,
+      "train_time_s": 59.5,
+      "robustness_sigma05": 0.5456
+    },
+    {
+      "name": "Quantum Kitchen Sinks (QKS, 60 features)",
+      "type": "Hybride (Features Quantiques Aleatoires)",
+      "features": "13 Brutes",
+      "qubits": 4,
+      "params": 183,
+      "macro_f1": 0.8266,
+      "accuracy": 0.8267,
+      "wheat_recall": 0.82,
+      "train_time_s": 0.054,
+      "robustness_sigma05": 0.5456
+    },
+    {
+      "name": "Classical Matched RBF Control",
+      "type": "Classique (gamma=0.113, C=10)",
+      "features": "8 PCA",
+      "qubits": 0,
+      "params": 469,
+      "macro_f1": 0.9323,
+      "accuracy": 0.9333,
+      "wheat_recall": 0.84,
+      "train_time_s": 0.019,
+      "robustness_sigma05": 0.7882
+    },
+    {
+      "name": "8-Qubit Quantum Kernel (QSVM, reps=1)",
+      "type": "Quantique (Espace de Hilbert dim 256)",
+      "features": "8 PCA",
+      "qubits": 8,
+      "params": 383,
+      "macro_f1": 0.94,
+      "accuracy": 0.94,
+      "wheat_recall": 0.92,
+      "train_time_s": 2.0,
+      "robustness_sigma05": 0.7337
+    },
+    {
+      "name": "Fusion Hybride Calibree (QK + RBF, alpha=0.53)",
+      "type": "Hybride Dual-Space (Decision Fusion)",
+      "features": "8 PCA",
+      "qubits": 8,
+      "params": "Ensemble",
+      "macro_f1": 0.9533,
+      "accuracy": 0.9533,
+      "wheat_recall": 0.92,
+      "train_time_s": 2.0,
+      "robustness_sigma05": 0.7815,
+      "maize_recall": 0.98,
+      "alfalfa_recall": 0.96
+    }
+  ],
+  "robustness_table": {
+    "sigma_levels": [
+      0.0,
+      0.05,
+      0.1,
+      0.2,
+      0.3,
+      0.5
+    ],
+    "QKS": [
+      0.8266,
+      0.827,
+      0.8271,
+      0.7823,
+      0.7338,
+      0.5456
+    ],
+    "Classical_RBF": [
+      0.9323,
+      0.9322,
+      0.9257,
+      0.8587,
+      0.8728,
+      0.7882
+    ],
+    "Quantum_Kernel": [
+      0.94,
+      0.92,
+      0.9205,
+      0.8737,
+      0.8409,
+      0.7337
+    ],
+    "Fusion_Hybride": [
+      0.9467,
+      0.9333,
+      0.9131,
+      0.873,
+      0.8673,
+      0.7815
+    ]
+  },
+  "key_findings": {
+    "best_accuracy": "Fusion Hybride (0.9533) > QK (0.9400) > Classical RBF (0.9323) > QKS (0.8266) > QNN (0.8062)",
+    "best_robustness_sigma05": "Classical RBF (0.7882) ~= Fusion Hybride (0.7815) > QK (0.7337) >> QKS (0.5456)",
+    "wheat_bias": "Classical RBF : wheat_recall=0.84 (biased). QK corrects to 0.92. Fusion maintains >=0.90.",
+    "recommended_submission": "Fusion Hybride Calibree (QK+RBF, alpha=0.53) : optimal 143/150 correct (95.33% Acc, 0.9533 F1)"
+  }
+}
