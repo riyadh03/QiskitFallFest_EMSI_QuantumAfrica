@@ -1,0 +1,551 @@
+{
+  "question": "How optimistic is 0.9533, how certain is the fusion gain, and is the gain quantum?",
+  "validation_fields": 150,
+  "spatial_blocks": 18,
+  "train_cv_selection": {
+    "folds": 5,
+    "rule": "best out-of-fold macro-F1, then smallest C; alpha ties broken towards 0.5",
+    "quantum_kernel": {
+      "config": {
+        "a": 0.1,
+        "gamma": 0.02,
+        "C": 100
+      },
+      "oof_macro_f1": 0.9206,
+      "configs_tried": 80
+    },
+    "matched_rbf": {
+      "config": {
+        "gamma": 0.11288,
+        "C": 1
+      },
+      "oof_macro_f1": 0.9186,
+      "configs_tried": 80
+    },
+    "classical_twin": {
+      "config": {
+        "a": 0.3,
+        "C": 10
+      },
+      "oof_macro_f1": 0.9157,
+      "configs_tried": 20
+    },
+    "alpha_fusion": {
+      "alpha": 0.56,
+      "oof_macro_f1": 0.9231
+    },
+    "alpha_twin": {
+      "alpha": 0.01,
+      "oof_macro_f1": 0.9186
+    }
+  },
+  "validation_scores": {
+    "reported_selected_on_validation": {
+      "quantum_kernel": {
+        "macro_f1": 0.9467,
+        "accuracy": 0.9467,
+        "correct": 142,
+        "recall_wheat": 0.92
+      },
+      "matched_rbf": {
+        "macro_f1": 0.9323,
+        "accuracy": 0.9333,
+        "correct": 140,
+        "recall_wheat": 0.84
+      },
+      "classical_twin_kernel": {
+        "macro_f1": 0.94,
+        "accuracy": 0.94,
+        "correct": 141,
+        "recall_wheat": 0.9
+      },
+      "fusion_qk_rbf": {
+        "macro_f1": 0.9533,
+        "accuracy": 0.9533,
+        "correct": 143,
+        "recall_wheat": 0.92
+      },
+      "fusion_twin_rbf": {
+        "macro_f1": 0.9465,
+        "accuracy": 0.9467,
+        "correct": 142,
+        "recall_wheat": 0.9
+      }
+    },
+    "selected_on_train_cv_only": {
+      "quantum_kernel": {
+        "macro_f1": 0.893,
+        "accuracy": 0.8933,
+        "correct": 134,
+        "recall_wheat": 0.86
+      },
+      "matched_rbf": {
+        "macro_f1": 0.9057,
+        "accuracy": 0.9067,
+        "correct": 136,
+        "recall_wheat": 0.82
+      },
+      "classical_twin_kernel": {
+        "macro_f1": 0.9197,
+        "accuracy": 0.92,
+        "correct": 138,
+        "recall_wheat": 0.86
+      },
+      "fusion_qk_rbf": {
+        "macro_f1": 0.8998,
+        "accuracy": 0.9,
+        "correct": 135,
+        "recall_wheat": 0.86
+      },
+      "fusion_twin_rbf": {
+        "macro_f1": 0.9057,
+        "accuracy": 0.9067,
+        "correct": 136,
+        "recall_wheat": 0.82
+      }
+    }
+  },
+  "paired_bootstrap": {
+    "samples": 4000,
+    "seed": 2026,
+    "protocol": "reported configs (as submitted)",
+    "comparisons": {
+      "fusion_qk_rbf - quantum_kernel": {
+        "fields_differing": 1,
+        "per_field": {
+          "macro_f1": {
+            "delta": 0.006527397837822968,
+            "ci95": [
+              0.0,
+              0.0211
+            ],
+            "p_not_better": 0.36025
+          },
+          "accuracy": {
+            "delta": 0.00666666666666671,
+            "ci95": [
+              0.0,
+              0.02
+            ],
+            "p_not_better": 0.36025
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": 0.020000000000000018,
+            "ci95": [
+              0.0,
+              0.0667
+            ],
+            "p_not_better": 0.36025
+          },
+          "recall_wheat": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          }
+        },
+        "per_spatial_block": {
+          "macro_f1": {
+            "delta": 0.006527397837822968,
+            "ci95": [
+              0.0,
+              0.0277
+            ],
+            "p_not_better": 0.35375
+          },
+          "accuracy": {
+            "delta": 0.00666666666666671,
+            "ci95": [
+              0.0,
+              0.0254
+            ],
+            "p_not_better": 0.35375
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": 0.020000000000000018,
+            "ci95": [
+              0.0,
+              0.0889
+            ],
+            "p_not_better": 0.35375
+          },
+          "recall_wheat": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          }
+        }
+      },
+      "fusion_qk_rbf - matched_rbf": {
+        "fields_differing": 5,
+        "per_field": {
+          "macro_f1": {
+            "delta": 0.020920321674566367,
+            "ci95": [
+              -0.0063,
+              0.0537
+            ],
+            "p_not_better": 0.06175
+          },
+          "accuracy": {
+            "delta": 0.020000000000000018,
+            "ci95": [
+              -0.0067,
+              0.0533
+            ],
+            "p_not_better": 0.1195
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": -0.020000000000000018,
+            "ci95": [
+              -0.0652,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.08000000000000007,
+            "ci95": [
+              0.0179,
+              0.1633
+            ],
+            "p_not_better": 0.01625
+          }
+        },
+        "per_spatial_block": {
+          "macro_f1": {
+            "delta": 0.020920321674566367,
+            "ci95": [
+              -0.0081,
+              0.0636
+            ],
+            "p_not_better": 0.067
+          },
+          "accuracy": {
+            "delta": 0.020000000000000018,
+            "ci95": [
+              -0.0078,
+              0.0569
+            ],
+            "p_not_better": 0.11475
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": -0.020000000000000018,
+            "ci95": [
+              -0.0741,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.08000000000000007,
+            "ci95": [
+              0.0164,
+              0.2
+            ],
+            "p_not_better": 0.011
+          }
+        }
+      },
+      "quantum_kernel - matched_rbf": {
+        "fields_differing": 6,
+        "per_field": {
+          "macro_f1": {
+            "delta": 0.014392923836743399,
+            "ci95": [
+              -0.0173,
+              0.0487
+            ],
+            "p_not_better": 0.163
+          },
+          "accuracy": {
+            "delta": 0.013333333333333308,
+            "ci95": [
+              -0.02,
+              0.0467
+            ],
+            "p_not_better": 0.2615
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": -0.040000000000000036,
+            "ci95": [
+              -0.1017,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.08000000000000007,
+            "ci95": [
+              0.0179,
+              0.1633
+            ],
+            "p_not_better": 0.01625
+          }
+        },
+        "per_spatial_block": {
+          "macro_f1": {
+            "delta": 0.014392923836743399,
+            "ci95": [
+              -0.0211,
+              0.0567
+            ],
+            "p_not_better": 0.18175
+          },
+          "accuracy": {
+            "delta": 0.013333333333333308,
+            "ci95": [
+              -0.0194,
+              0.0504
+            ],
+            "p_not_better": 0.26575
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": -0.040000000000000036,
+            "ci95": [
+              -0.125,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.08000000000000007,
+            "ci95": [
+              0.0164,
+              0.2
+            ],
+            "p_not_better": 0.011
+          }
+        }
+      },
+      "fusion_qk_rbf - fusion_twin_rbf": {
+        "fields_differing": 1,
+        "per_field": {
+          "macro_f1": {
+            "delta": 0.006751195133344101,
+            "ci95": [
+              0.0,
+              0.0222
+            ],
+            "p_not_better": 0.36
+          },
+          "accuracy": {
+            "delta": 0.00666666666666671,
+            "ci95": [
+              0.0,
+              0.02
+            ],
+            "p_not_better": 0.36
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.020000000000000018,
+            "ci95": [
+              0.0,
+              0.0682
+            ],
+            "p_not_better": 0.36
+          }
+        },
+        "per_spatial_block": {
+          "macro_f1": {
+            "delta": 0.006751195133344101,
+            "ci95": [
+              0.0,
+              0.0273
+            ],
+            "p_not_better": 0.3565
+          },
+          "accuracy": {
+            "delta": 0.00666666666666671,
+            "ci95": [
+              0.0,
+              0.0259
+            ],
+            "p_not_better": 0.3565
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.020000000000000018,
+            "ci95": [
+              0.0,
+              0.0882
+            ],
+            "p_not_better": 0.3565
+          }
+        }
+      },
+      "fusion_twin_rbf - matched_rbf": {
+        "fields_differing": 4,
+        "per_field": {
+          "macro_f1": {
+            "delta": 0.014169126541222266,
+            "ci95": [
+              -0.0116,
+              0.0434
+            ],
+            "p_not_better": 0.1225
+          },
+          "accuracy": {
+            "delta": 0.013333333333333308,
+            "ci95": [
+              -0.0133,
+              0.04
+            ],
+            "p_not_better": 0.21625
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": -0.020000000000000018,
+            "ci95": [
+              -0.0652,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.06000000000000005,
+            "ci95": [
+              0.0,
+              0.1373
+            ],
+            "p_not_better": 0.049
+          }
+        },
+        "per_spatial_block": {
+          "macro_f1": {
+            "delta": 0.014169126541222266,
+            "ci95": [
+              -0.0128,
+              0.0504
+            ],
+            "p_not_better": 0.134
+          },
+          "accuracy": {
+            "delta": 0.013333333333333308,
+            "ci95": [
+              -0.0123,
+              0.0444
+            ],
+            "p_not_better": 0.21625
+          },
+          "recall_alfalfa": {
+            "delta": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_maize": {
+            "delta": -0.020000000000000018,
+            "ci95": [
+              -0.0741,
+              0.0
+            ],
+            "p_not_better": 1.0
+          },
+          "recall_wheat": {
+            "delta": 0.06000000000000005,
+            "ci95": [
+              0.0,
+              0.1515
+            ],
+            "p_not_better": 0.03725
+          }
+        }
+      }
+    }
+  },
+  "seconds": 57.8
+}

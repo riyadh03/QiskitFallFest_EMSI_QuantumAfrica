@@ -1,0 +1,4 @@
+model,mean_fit_predict_seconds,trainable,objective_evaluations,qubits,frozen_quantum,depth,two_qubit_gates,readout_group_sizes,encoding,compilation
+reference,0.006905769929289818,,,,,,,,,
+matched_head,0.051145837331811585,11.0,100.0,,,,,,,
+qnn,54.92757426823179,8.0,100.0,4.0,0.0,6.0,3.0,"[6, 5, 5]",ry,logical decomposed H/P/RY/CX; no backend routing

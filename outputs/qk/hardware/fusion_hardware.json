@@ -1,0 +1,167 @@
+{
+  "model": "Calibrated decision fusion (submitted)",
+  "alpha": 0.53,
+  "backend": "ibm_kingston",
+  "jobs": [
+    "dc01ihanj2vs73dda82g",
+    "dc027sls2omc7388l0q0",
+    "dc0onjinj2vs73deb200"
+  ],
+  "fields": 12,
+  "correct": {
+    "fusion_exact": 11,
+    "fusion_ideal_shots": 10,
+    "fusion_hardware_raw": 9,
+    "fusion_hardware_corrected": 9,
+    "qk_only_hardware_corrected": 5,
+    "rbf_only_local": 11
+  },
+  "agreement_fusion_hardware_vs_exact": 8,
+  "per_field": [
+    {
+      "job_id": "dc01ihanj2vs73dda82g",
+      "field": 0,
+      "sample_id": "r2_4769de2441c6188e",
+      "true": "wheat",
+      "rbf_only": "wheat",
+      "qk_hardware_corrected": "alfalfa",
+      "fusion_exact": "wheat",
+      "fusion_ideal_shots": "wheat",
+      "fusion_hardware_raw": "alfalfa",
+      "fusion_hardware_corrected": "alfalfa"
+    },
+    {
+      "job_id": "dc01ihanj2vs73dda82g",
+      "field": 1,
+      "sample_id": "r2_49c4f17d7d070fa9",
+      "true": "maize",
+      "rbf_only": "maize",
+      "qk_hardware_corrected": "wheat",
+      "fusion_exact": "maize",
+      "fusion_ideal_shots": "maize",
+      "fusion_hardware_raw": "wheat",
+      "fusion_hardware_corrected": "wheat"
+    },
+    {
+      "job_id": "dc01ihanj2vs73dda82g",
+      "field": 28,
+      "sample_id": "r2_3e9e2987f8c1dc10",
+      "true": "alfalfa",
+      "rbf_only": "alfalfa",
+      "qk_hardware_corrected": "alfalfa",
+      "fusion_exact": "alfalfa",
+      "fusion_ideal_shots": "alfalfa",
+      "fusion_hardware_raw": "alfalfa",
+      "fusion_hardware_corrected": "alfalfa"
+    },
+    {
+      "job_id": "dc027sls2omc7388l0q0",
+      "field": 30,
+      "sample_id": "r2_adbef89287239bee",
+      "true": "alfalfa",
+      "rbf_only": "alfalfa",
+      "qk_hardware_corrected": "alfalfa",
+      "fusion_exact": "alfalfa",
+      "fusion_ideal_shots": "alfalfa",
+      "fusion_hardware_raw": "alfalfa",
+      "fusion_hardware_corrected": "alfalfa"
+    },
+    {
+      "job_id": "dc027sls2omc7388l0q0",
+      "field": 2,
+      "sample_id": "r2_d2eea33889a56ff4",
+      "true": "maize",
+      "rbf_only": "maize",
+      "qk_hardware_corrected": "maize",
+      "fusion_exact": "maize",
+      "fusion_ideal_shots": "wheat",
+      "fusion_hardware_raw": "maize",
+      "fusion_hardware_corrected": "maize"
+    },
+    {
+      "job_id": "dc027sls2omc7388l0q0",
+      "field": 12,
+      "sample_id": "r2_113bd4169586fba3",
+      "true": "wheat",
+      "rbf_only": "wheat",
+      "qk_hardware_corrected": "wheat",
+      "fusion_exact": "wheat",
+      "fusion_ideal_shots": "maize",
+      "fusion_hardware_raw": "wheat",
+      "fusion_hardware_corrected": "wheat"
+    },
+    {
+      "job_id": "dc027sls2omc7388l0q0",
+      "field": 32,
+      "sample_id": "r2_64185e1a5b915bc2",
+      "true": "alfalfa",
+      "rbf_only": "alfalfa",
+      "qk_hardware_corrected": "alfalfa",
+      "fusion_exact": "alfalfa",
+      "fusion_ideal_shots": "alfalfa",
+      "fusion_hardware_raw": "alfalfa",
+      "fusion_hardware_corrected": "alfalfa"
+    },
+    {
+      "job_id": "dc027sls2omc7388l0q0",
+      "field": 3,
+      "sample_id": "r2_7e175023e4dda69b",
+      "true": "maize",
+      "rbf_only": "maize",
+      "qk_hardware_corrected": "wheat",
+      "fusion_exact": "maize",
+      "fusion_ideal_shots": "maize",
+      "fusion_hardware_raw": "maize",
+      "fusion_hardware_corrected": "maize"
+    },
+    {
+      "job_id": "dc027sls2omc7388l0q0",
+      "field": 13,
+      "sample_id": "r2_894d67434594d947",
+      "true": "wheat",
+      "rbf_only": "wheat",
+      "qk_hardware_corrected": "alfalfa",
+      "fusion_exact": "wheat",
+      "fusion_ideal_shots": "wheat",
+      "fusion_hardware_raw": "wheat",
+      "fusion_hardware_corrected": "wheat"
+    },
+    {
+      "job_id": "dc027sls2omc7388l0q0",
+      "field": 34,
+      "sample_id": "r2_0c0eb4e1f3a8bca7",
+      "true": "alfalfa",
+      "rbf_only": "alfalfa",
+      "qk_hardware_corrected": "maize",
+      "fusion_exact": "alfalfa",
+      "fusion_ideal_shots": "alfalfa",
+      "fusion_hardware_raw": "alfalfa",
+      "fusion_hardware_corrected": "alfalfa"
+    },
+    {
+      "job_id": "dc0onjinj2vs73deb200",
+      "field": 35,
+      "sample_id": "r2_8579e12576443070",
+      "true": "wheat",
+      "rbf_only": "maize",
+      "qk_hardware_corrected": "maize",
+      "fusion_exact": "wheat",
+      "fusion_ideal_shots": "wheat",
+      "fusion_hardware_raw": "maize",
+      "fusion_hardware_corrected": "maize"
+    },
+    {
+      "job_id": "dc0onjinj2vs73deb200",
+      "field": 38,
+      "sample_id": "r2_f637d7dd1c2a9eee",
+      "true": "maize",
+      "rbf_only": "maize",
+      "qk_hardware_corrected": "alfalfa",
+      "fusion_exact": "wheat",
+      "fusion_ideal_shots": "maize",
+      "fusion_hardware_raw": "maize",
+      "fusion_hardware_corrected": "maize"
+    }
+  ],
+  "scope": "12 fixed validation fields, models trained locally; a feasibility check, not an accuracy estimate."
+}

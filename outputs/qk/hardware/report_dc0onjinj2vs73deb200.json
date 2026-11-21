@@ -1,0 +1,90 @@
+{
+  "job_id": "dc0onjinj2vs73deb200",
+  "backend": "ibm_kingston",
+  "fields": [
+    35,
+    38
+  ],
+  "shots": 500,
+  "sample_ids": [
+    "r2_8579e12576443070",
+    "r2_f637d7dd1c2a9eee"
+  ],
+  "twirling": true,
+  "circuits": 382,
+  "support_vectors": 190,
+  "isa_depth_max": 125,
+  "isa_two_qubit_max": 28,
+  "true_labels": [
+    "wheat",
+    "maize"
+  ],
+  "predicted_exact": [
+    "wheat",
+    "wheat"
+  ],
+  "predicted_ideal_shots": [
+    "wheat",
+    "maize"
+  ],
+  "predicted_hardware_raw": [
+    "maize",
+    "alfalfa"
+  ],
+  "predicted_hardware_corrected": [
+    "maize",
+    "alfalfa"
+  ],
+  "fusion_alpha": 0.53,
+  "predicted_fusion_exact": [
+    "wheat",
+    "wheat"
+  ],
+  "predicted_fusion_hardware_corrected": [
+    "maize",
+    "maize"
+  ],
+  "self_pair_fidelity": [
+    0.742,
+    0.748
+  ],
+  "shrink_factor": [
+    0.7409882352941176,
+    0.7470117647058824
+  ],
+  "kernel_mae": {
+    "ideal_shots": 0.008016231005960855,
+    "hardware_raw": 0.07398935850304364,
+    "hardware_corrected": 0.03524175576972209
+  },
+  "kernel_corr": {
+    "hardware_raw": 0.9798368339316382,
+    "ideal_shots": 0.9993899097577444
+  },
+  "decision_exact": [
+    [
+      -0.2828072030674725,
+      1.1999183722585345,
+      2.267958166551921
+    ],
+    [
+      -0.20817331050905266,
+      0.8312232566225509,
+      2.2429722287221074
+    ]
+  ],
+  "decision_hardware_corrected": [
+    [
+      1.323617789914535,
+      2.3192226585756472,
+      -0.3274784015729871
+    ],
+    [
+      1.3112803771145078,
+      0.6833036617115594,
+      1.2770321430440759
+    ]
+  ],
+  "usage_seconds": 60,
+  "scope": "Inference on a few fixed validation fields with a locally trained model; not an accuracy estimate."
+}

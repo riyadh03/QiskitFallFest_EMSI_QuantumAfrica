@@ -1,0 +1,23 @@
+{
+  "mechanism_1_mkl": {
+    "description": "Convex combination of Hilbert space kernels: K = beta * K_quant + (1-beta) * K_rbf",
+    "best_beta": 1.0,
+    "f1_at_beta_0_rbf": 0.9124,
+    "f1_at_beta_1_quant": 0.94
+  },
+  "mechanism_2_decision_fusion": {
+    "description": "Calibrated Softmax probability blending: P = alpha * P_quant + (1-alpha) * P_rbf",
+    "best_alpha": 0.55,
+    "macro_f1_optimal": 0.9467,
+    "accuracy_optimal": 0.9467,
+    "f1_balanced_50_50": 0.9467
+  },
+  "bias_mitigation": {
+    "classical_wheat_recall": 0.84,
+    "quantum_wheat_recall": 0.92,
+    "hybrid_wheat_recall": 0.9,
+    "hybrid_maize_recall": 0.98,
+    "hybrid_alfalfa_recall": 0.96,
+    "conclusion": "Classical model suffered from 16% false negatives on Wheat (biased toward Maize). Quantum model restored balance. Hybrid achieves >=90% recall on every single crop."
+  }
+}
