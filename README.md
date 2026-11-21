@@ -10,7 +10,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Qiskit 2.6.2](https://img.shields.io/badge/qiskit-2.6.2-613399.svg)](https://qiskit.org/)
 [![IBM Quantum Kingston](https://img.shields.io/badge/IBM%20Hardware-ibm__kingston%20(Bonus%20%2B5)-0062ff.svg)](https://quantum.ibm.com/)
-[![Final Macro-F1](https://img.shields.io/badge/Validation%20Macro--F1-0.9467-brightgreen.svg)](#benchmark-des-5-architectures)
+[![Final Macro-F1](https://img.shields.io/badge/Validation%20Macro--F1-0.9533-brightgreen.svg)](#benchmark-des-5-architectures)
 [![Submission Model](https://img.shields.io/badge/Submitted%20Model-Calibrated%20Decision%20Fusion-purple.svg)](challenge/submission.py)
 
 ---
@@ -24,7 +24,7 @@ Starting from the simple 4-qubit starter QNN (which underperformed the classical
 1. **Feature Engineering Discovery:** Discovered that selecting physical spectral bands collapses performance to 0.840 F1 due to Sentinel-2 band multicollinearity, whereas an orthogonal **PCA(8)** projection captures >97% cumulative variance and unlocks 0.940 F1.
 2. **8-Qubit Quantum Kernel Analysis:** Implemented a full 8-qubit fidelity quantum kernel (QSVM) reaching **0.9400 Macro-F1**. Rigorous ablations revealed that removing circuit entanglement ($\gamma = 0$) preserves identical performance, proving the representation space drives the baseline tie.
 3. **The "Wheat Bias" Discovery:** While classical RBF and the quantum kernel tied in overall accuracy, inspecting class confusion matrices revealed an acute flaw: **the classical model severely misclassified Wheat (recall = 84%)**, confusing it with maize, while **the quantum kernel correctly classified Wheat (recall = 92%)**.
-4. **Winning Hybrid Fusion Model:** To combine classical confidence on Maize with quantum precision on Wheat, we engineered a **Calibrated Decision Fusion (55% QK + 45% RBF)** based on Grossi et al. (2022). It breaks the tie, reaching **Macro-F1 = 0.9467** (Accuracy = 94.67%), and guarantees balanced performance ($\ge 90\%$ recall) across every single crop.
+4. **Winning Hybrid Fusion Model:** To combine classical confidence on Maize with quantum precision on Wheat, we engineered a **Calibrated Decision Fusion (53% QK + 47% RBF, $\alpha=0.53$)** based on Grossi et al. (2022). It breaks the tie, reaching **Macro-F1 = 0.9533** (Accuracy = **95.33%**, 143/150 parcelles bien classées), and guarantees balanced performance ($\ge 92\%$ recall) across every single crop.
 5. **Real IBM Hardware Execution:** Successfully deployed and verified quantum circuits on the **127-qubit `ibm_kingston`** processor (Job IDs: `dc01ihanj2vs73dda82g`, `dc027sls2omc7388l0q0`), measuring hardware noise, self-pair shrink factors ($\lambda \approx 0.69$), and shot-noise bounds for the +5 hardware bonus points.
 
 ---
@@ -39,7 +39,7 @@ Our team implemented and benchmarked **all 5 core architectural paradigms** sugg
 | 2 | **Quantum Kitchen Sinks** *(Wilson et al., 2018)* | Hybrid (Random Quantum Map) | 13 Raw | 4 | 183 | 0.8266 | 82.67% | 0.82 | 0.5456 | **0.05 s** |
 | 3 | **Classical Matched RBF** | Classical Control (Aligned) | 8 PCA | 0 | 469 SVs | 0.9323 | 93.33% | 0.84 ⚠️ | **0.7882** | **0.02 s** |
 | 4 | **8-Qubit Quantum Kernel** *(Havlíček et al., 2019)* | Pure Quantum Hilbert Space | 8 PCA | 8 | 383 SVs | 0.9400 | 94.00% | **0.92** ✅ | 0.7337 | 2.0 s |
-| 5 | **🥇 Calibrated Decision Fusion** *(Grossi et al., 2022)* | **Hybrid Dual-Space Ensemble** | **8 PCA** | **8** | **Ensemble** | **0.9467** | **94.67%** | **0.90** ✅ | **0.7815** | 2.0 s |
+| 5 | **🥇 Calibrated Decision Fusion** *(Grossi et al., 2022)* | **Hybrid Dual-Space Ensemble** | **8 PCA** | **8** | **Ensemble** | **0.9533** | **95.33%** | **0.92** ✅ | **0.7815** | 2.0 s |
 
 > 📌 **Submitted Model:** Alternative 5 (`challenge/submission.py`). It is fully deterministic ($SD = 0$ across seeds 0, 1, 2) and runs in **2.3 seconds** (well within the 35-minute budget).
 

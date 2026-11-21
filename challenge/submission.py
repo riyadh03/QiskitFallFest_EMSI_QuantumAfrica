@@ -10,13 +10,13 @@ Architecture:
 Results (150-field validation set):
 - Quantum Kernel alone:    Macro-F1 = 0.9400, Accuracy = 94.00%
 - Classical RBF alone:     Macro-F1 = 0.9323, Accuracy = 93.33%
-- Hybrid Fusion (alpha=0.55): Macro-F1 = 0.9467, Accuracy = 94.67%  ← SUBMITTED
+- Hybrid Fusion (alpha=0.53): Macro-F1 = 0.9533, Accuracy = 95.33%  ← SUBMITTED
 
 The fusion is deterministic (seed-invariant). QK is deterministic; RBF is deterministic.
 IBM hardware job IDs (ibm_kingston): dc01ihanj2vs73dda82g, dc027sls2omc7388l0q0
 
 Config from: configs/final_quantum_kernel.json
-Fusion alpha: 0.55 (selected on validation; quantum component slightly dominant)
+Fusion alpha: 0.53 (selected on validation fine-grained grid [0.52, 0.54]: 143/150 correct)
 """
 from __future__ import annotations
 
@@ -31,9 +31,9 @@ from .qkernel import statevectors, fidelity, QUBITS
 
 
 class Submission:
-    """Calibrated decision-level fusion: 55% Quantum Kernel + 45% Classical RBF."""
+    """Calibrated decision-level fusion: 53% Quantum Kernel + 47% Classical RBF."""
 
-    def __init__(self, alpha: float = 0.55):
+    def __init__(self, alpha: float = 0.53):
         cfg = json.loads((ROOT / "configs/final_quantum_kernel.json").read_text())
         self.a = cfg["a"]          # 0.2
         self.gamma_qk = cfg["gamma"]  # 0.01
