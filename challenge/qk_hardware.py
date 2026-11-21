@@ -5,8 +5,14 @@ compute-uncompute circuit U(sv)^dagger U(x)|0> for every support vector sv, plus
 (ideal K = 1) that measures the depolarizing shrink factor used for a simple global correction.
 The locally fitted SVM then classifies the field from that hardware kernel row.
 
-    python -m challenge.qk_hardware submit --backend ibm_kingston --fields 0 --shots 1000 --approve
-    python -m challenge.qk_hardware analyze --job <JOB_ID>
+Submitted model on hardware (calibrated decision fusion, challenge/submission.py): the quantum branch's decision
+margins come from the hardware kernel row, the RBF branch is classical and runs locally, and the two are blended
+as alpha * softmax(d_QK) + (1 - alpha) * softmax(d_RBF) with the submitted alpha. The quantum part is the only part
+that can run on a QPU, so this is the complete submitted model with its quantum component on ibm_kingston.
+
+    python -m challenge.qk_hardware submit --backend ibm_kingston --fields 0 --shots 1000 --approve --twirl
+    python -m challenge.qk_hardware analyze --job <JOB_ID>      (QK-only and fusion predictions for that job)
+    python -m challenge.qk_hardware fusion                      (fusion on every analysed twirled job, no QPU call)
 Credentials come from the saved Qiskit account or QISKIT_IBM_TOKEN; nothing secret is written to outputs/.
 """
 import argparse
@@ -17,9 +23,11 @@ from qiskit.primitives import StatevectorSampler
 from qiskit.transpiler import generate_preset_pass_manager
 
 from .data import ROOT, load_data
-from .qkernel import QuantumKernelSVM, compute_uncompute, statevectors, fidelity
+from .qkernel import QuantumKernelSVM, MatchedRBF, compute_uncompute, statevectors, fidelity
+from .submission import Submission
 
 OUT = ROOT / 'outputs/qk/hardware'
+SUBMITTED = Submission()  # single source of truth for alpha and the RBF branch settings
 
 
 def fitted_model():
@@ -49,6 +57,57 @@ def full_row(model, K_sv):
 
 def classify_rows(model, K_sv):
     return model.svm.predict(full_row(model, K_sv))
+
+
+def fitted_rbf(tables, F):
+    """Classical branch of the submitted fusion, same encoder and settings as challenge/submission.py."""
+    return MatchedRBF(SUBMITTED.gamma_rbf, SUBMITTED.C_rbf).fit(tables['train'][F].to_numpy(), tables['train'].target)
+
+
+def fusion_rows(model, rbf, K_sv, X_raw, alpha=None):
+    """Submitted fusion: QK margins from (hardware or exact) kernel rows on the support vectors + local RBF margins."""
+    alpha = SUBMITTED.alpha if alpha is None else alpha
+    d_qk = model.svm.decision_function(full_row(model, K_sv))
+    d_rbf = rbf.svm.decision_function(rbf.prep.transform(np.asarray(X_raw, float)))
+    P = alpha * Submission._softmax(d_qk) + (1 - alpha) * Submission._softmax(d_rbf)
+    return model.svm.classes_[P.argmax(axis=1)]
+
+
+def fusion_hardware(model, rbf, validation, F):
+    """Replay the submitted fusion on every analysed twirled job from its saved kernel rows (no QPU call)."""
+    fields, backends = [], set()
+    for f in sorted(OUT.glob('report_*.json')):
+        r = json.loads(f.read_text())
+        if not r.get('twirling'):
+            continue  # first job: its self-pair calibration circuit was cancelled by the transpiler
+        backends.add(r['backend'])
+        k = np.load(OUT / f"kernels_{r['job_id']}.npz")
+        X = validation[F].to_numpy()[r['fields']]
+        preds = dict(exact=fusion_rows(model, rbf, k['exact'], X),
+                     ideal_shots=fusion_rows(model, rbf, k['ideal_shots'][:, :-1], X),
+                     hardware_raw=fusion_rows(model, rbf, k['hardware'][:, :-1], X),
+                     hardware_corrected=fusion_rows(model, rbf, k['corrected'], X))
+        rbf_only = rbf.predict(X)
+        for i, idx in enumerate(r['fields']):
+            fields.append(dict(job_id=r['job_id'], field=idx, sample_id=r['sample_ids'][i], true=r['true_labels'][i],
+                               rbf_only=rbf_only[i], qk_hardware_corrected=r['predicted_hardware_corrected'][i],
+                               **{f'fusion_{k_}': v[i] for k_, v in preds.items()}))
+    ok = lambda key: int(sum(x[key] == x['true'] for x in fields))
+    out = dict(model='Calibrated decision fusion (submitted)', alpha=SUBMITTED.alpha,
+               backend=', '.join(sorted(backends)), jobs=sorted({x['job_id'] for x in fields}),
+               fields=len(fields),
+               correct=dict(fusion_exact=ok('fusion_exact'), fusion_ideal_shots=ok('fusion_ideal_shots'),
+                            fusion_hardware_raw=ok('fusion_hardware_raw'),
+                            fusion_hardware_corrected=ok('fusion_hardware_corrected'),
+                            qk_only_hardware_corrected=ok('qk_hardware_corrected'), rbf_only_local=ok('rbf_only')),
+               agreement_fusion_hardware_vs_exact=int(sum(x['fusion_hardware_corrected'] == x['fusion_exact'] for x in fields)),
+               per_field=fields,
+               scope=f'{len(fields)} fixed validation fields, models trained locally; a feasibility check, not an accuracy estimate.')
+    (OUT / 'fusion_hardware.json').write_text(json.dumps(out, indent=2))
+    print(json.dumps({k: v for k, v in out.items() if k != 'per_field'}, indent=2))
+    for x in fields:
+        print(f"field {x['field']:3d} true={x['true']:8s} fusion exact={x['fusion_exact']:8s} "
+              f"fusion HW={x['fusion_hardware_corrected']:8s} QK-only HW={x['qk_hardware_corrected']:8s} RBF={x['rbf_only']}")
 
 
 def shots_study(model, validation, F, lam=0.69):
@@ -95,15 +154,18 @@ def main():
     s.add_argument('--shots', type=int, default=1000); s.add_argument('--approve', action='store_true')
     s.add_argument('--twirl', action='store_true')
     a = sub.add_parser('analyze'); a.add_argument('--job', required=True)
-    sub.add_parser('shots'); sub.add_parser('summary')
+    sub.add_parser('shots'); sub.add_parser('summary'); sub.add_parser('fusion')
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     model, tables, F = fitted_model()
     validation = tables['validation']
+    rbf = fitted_rbf(tables, F)
     if args.command == 'shots':
         return shots_study(model, validation, F)
     if args.command == 'summary':
         return summary()
+    if args.command == 'fusion':
+        return fusion_hardware(model, rbf, validation, F)
     from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2
     service = QiskitRuntimeService()
 
@@ -147,6 +209,9 @@ def main():
                   predicted_ideal_shots=classify_rows(model, sim[:, :-1]).tolist(),
                   predicted_hardware_raw=classify_rows(model, hw[:, :-1]).tolist(),
                   predicted_hardware_corrected=classify_rows(model, corrected).tolist(),
+                  fusion_alpha=SUBMITTED.alpha,
+                  predicted_fusion_exact=fusion_rows(model, rbf, exact, validation[F].to_numpy()[fields]).tolist(),
+                  predicted_fusion_hardware_corrected=fusion_rows(model, rbf, corrected, validation[F].to_numpy()[fields]).tolist(),
                   self_pair_fidelity=hw[:, -1].tolist(), shrink_factor=lam.tolist(),
                   kernel_mae=dict(ideal_shots=float(np.abs(sim[:, :-1] - exact).mean()),
                                   hardware_raw=float(np.abs(hw[:, :-1] - exact).mean()),

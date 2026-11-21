@@ -74,17 +74,21 @@ def evaluate_fusion_robustness(
     X_va_raw: np.ndarray,
     y_va: np.ndarray,
     alphas: list[float] = [0.0, 0.2, 0.35, 0.5, 0.53, 0.7, 1.0],
-    sigmas: list[float] = [0.0, 0.1, 0.2, 0.3, 0.5],
+    sigmas: list[float] = [0.0, 0.05, 0.1, 0.2, 0.3, 0.5],
     draws: int = 5,
     seed: int = 2026
 ) -> pd.DataFrame:
-    """Measure macro-F1 across noise levels sigma for various alpha weights."""
-    rng = np.random.default_rng(seed)
+    """Measure macro-F1 across noise levels sigma for various alpha weights.
+
+    Paired design: the generator is re-seeded for every alpha, so every alpha sees exactly the same noisy copies
+    of the validation set and differences between rows come from the model, not from different noise draws.
+    """
     std = X_tr_raw.std(axis=0)
     classes = model_qk.svm.classes_
     records = []
 
     for a in alphas:
+        rng = np.random.default_rng(seed)
         row = {"alpha": a}
         for sig in sigmas:
             draw_f1s = []

@@ -27,9 +27,10 @@ Starting from the simple 4-qubit starter QNN (which underperformed the classical
 
 1. **Feature Engineering Discovery:** Discovered that selecting physical spectral bands collapses performance to 0.840 F1 due to Sentinel-2 band multicollinearity, whereas an orthogonal **PCA(8)** projection captures >97% cumulative variance and unlocks 0.940 F1.
 2. **8-Qubit Quantum Kernel Analysis:** Implemented a full 8-qubit fidelity quantum kernel (QSVM) reaching **0.9400 Macro-F1**. Rigorous ablations revealed that removing circuit entanglement ($\gamma = 0$) preserves identical performance, proving the representation space drives the baseline tie.
-3. **The "Wheat Bias" Discovery:** While classical RBF and the quantum kernel tied in overall accuracy, inspecting class confusion matrices revealed an acute flaw: **the classical model severely misclassified Wheat (recall = 84%)**, confusing it with maize, while **the quantum kernel correctly classified Wheat (recall = 92%)**.
-4. **Winning Hybrid Fusion Model:** To combine classical confidence on Maize with quantum precision on Wheat, we engineered a **Calibrated Decision Fusion (53% QK + 47% RBF, $\alpha=0.53$)** based on Grossi et al. (2022). It breaks the tie, reaching **Macro-F1 = 0.9533** (Accuracy = **95.33%**, 143/150 parcelles bien classées), and guarantees balanced performance ($\ge 92\%$ recall) across every single crop.
-5. **Real IBM Hardware Execution:** Successfully deployed and verified quantum circuits on the **127-qubit `ibm_kingston`** processor (Job IDs: `dc01ihanj2vs73dda82g`, `dc027sls2omc7388l0q0`), measuring hardware noise, self-pair shrink factors ($\lambda \approx 0.69$), and shot-noise bounds for the +5 hardware bonus points.
+3. **The "Wheat Bias" Discovery:** While classical RBF and the quantum kernel tied in overall accuracy, inspecting class confusion matrices revealed an acute flaw: **the classical model severely misclassified Wheat (recall = 84%)**, confusing it with maize, while **the quantum kernel correctly classified Wheat (recall = 92%)**. This is the one difference that survives a paired spatial-block bootstrap (+8 pts, 95% CI [+1.6, +20]).
+4. **Hybrid Fusion Model:** To combine classical confidence on Maize with the kernel's precision on Wheat, we engineered a **Calibrated Decision Fusion (53% QK + 47% RBF, $\alpha=0.53$)** based on Grossi et al. (2022), reaching **Macro-F1 = 0.9533** on validation (Accuracy = **95.33%**, 143/150 parcelles bien classées) with $\ge 92\%$ recall on every crop.
+5. **Real IBM Hardware Execution:** Ran the quantum branch on the **156-qubit Heron r2 `ibm_kingston`** processor (Job IDs: `dc01ihanj2vs73dda82g`, `dc027sls2omc7388l0q0`, `dc0onjinj2vs73deb200`), measuring hardware noise, self-pair shrink factors ($\lambda \approx 0.7$) and shot-noise bounds, then ran the **complete submitted fusion** on those hardware kernel rows: 9/12 fields correct vs 5/12 for the quantum kernel alone, but on no field does the hardware fusion beat the classical RBF.
+6. **Honest Validation Audit:** Because hyper-parameters and $\alpha$ were chosen on the same 150 validation fields, we audited the result ([`challenge/validation_audit.py`](challenge/validation_audit.py), [section 7](#7-audit-de-validation--optimisme-incertitude-et-part-quantique)): 0.9533 is an optimistic estimate, the fusion beats the quantum kernel alone by **a single field**, and a **classical twin** of the circuit kernel (no circuit, closed form $\prod\cos^2$) reaches almost the same score. We report this as a clear negative finding on quantum advantage.
 
 ---
 
@@ -86,8 +87,9 @@ Pour déterminer rigoureusement le mélange quantique-classique sans approximati
 * **$\alpha = 0.00$ (Classique seul) :** 140/150 correctes (Acc: 93.33%, F1: 0.9323) — *Biais sévère sur le blé (84%)*.
 * **$\alpha = 0.50$ (Fusion 50/50) :** 142/150 correctes (Acc: 94.67%, F1: 0.9465) — *Le biais du blé commence à être corrigé*.
 * **$\alpha \in [0.52, 0.54]$ (Plateau optimal centré à $\alpha = 0.53$) :** **143/150 correctes (Acc: 95.33%, F1: 0.9533)** — *Synergie parfaite : le classique assure 98% sur le maïs et le quantique assure 92% sur le blé*.
-* **$\alpha = 1.00$ (Quantique seul) :** 141/150 correctes (Acc: 94.00%, F1: 0.9400).
-* **Robustesse au bruit fort ($\sigma = 0.5$) :** À $\alpha = 0.53$, le modèle conserve un F1 de **0.5198** (contre 0.4234 pour le classique qui s'effondre).
+* **$\alpha \in [0.55, 1.00]$ (dont Quantique seul à $\alpha = 1$) :** 142/150 correctes (Acc: 94.67%, F1: 0.9467).
+  * *Note :* le chiffre « 141/150, F1 0.9400 » cité ailleurs pour le noyau quantique vient de `svm.predict` (vote un-contre-un). La parcelle 56 y est une égalité parfaite à 3 votes, que `predict` attribue à la première classe (faux) et que l'argmax des marges attribue correctement. À règle de décision identique, **la fusion ne gagne qu'une parcelle sur le noyau quantique seul** (143 contre 142), et seulement sur la fenêtre étroite $\alpha \in [0.52, 0.54]$.
+* **Robustesse au bruit fort ($\sigma = 0.5$, bruit apparié) :** À $\alpha = 0.53$, le modèle conserve un F1 de **0.486**, contre 0.424 pour le classique seul et 0.526 pour le quantique seul.
 
 > 📌 **Script de Preuve Indépendant :**  
 > L'ensemble de la fonction de balayage et des tests de robustesse est packagé dans [`challenge/fusion.py`](challenge/fusion.py). Vous pouvez reproduire ce résultat exact à tout moment via la commande :  
@@ -136,9 +138,26 @@ Pour déterminer rigoureusement le mélange quantique-classique sans approximati
   <img src="outputs/qk/fig4_hardware.png" alt="Figure 4: IBM Quantum Kingston Hardware execution and shrink factor" width="850">
 </p>
 
-* **Backend :** 127-qubit Eagle r3 `ibm_kingston` (Jobs: `dc01ihanj2vs73dda82g`, `dc027sls2omc7388l0q0`).
-* **Protocole :** 573 circuits d'inférence, 1000 shots, Pauli twirling et mesure du facteur de contraction (*shrink factor*) auto-apparié $\lambda \approx 0.69$.
+* **Backend :** `ibm_kingston`, processeur IBM **Heron r2** de 156 qubits (portes natives `cz, rz, sx, x, rzz`), jobs `dc01ihanj2vs73dda82g`, `dc027sls2omc7388l0q0` et `dc0onjinj2vs73deb200` (441 s de QPU au total).
+* **Protocole :** 2 292 circuits compute-uncompute pour 12 parcelles de validation fixes (une ligne de noyau sur les 190 vecteurs de support, plus un circuit auto-apparié par parcelle), 1000 ou 500 shots, Pauli twirling, dynamical decoupling, et correction par le facteur de contraction (*shrink factor*) auto-apparié $\lambda \approx 0.66$–$0.75$. Le SVM est entraîné localement ; seule l'inférence passe sur le QPU.
 * **Découverte NISQ :** L'inférence sur hardware réel est limitée par le bruit d'échantillonnage (*shot noise*), nécessitant $\sim 100\,000$ shots par entrée pour égaler le simulateur exact. Cette observation honnête documente fidèlement les contraintes des processeurs NISQ actuels.
+
+#### Le modèle soumis (fusion) sur hardware
+Le noyau quantique est la seule partie du modèle soumis qui peut tourner sur un QPU. Nous avons donc rejoué la **fusion complète** ($\alpha = 0.53$) en remplaçant les marges du noyau exact par celles calculées à partir des lignes de noyau mesurées sur `ibm_kingston`. La branche RBF reste classique et tourne en local.
+
+| 12 parcelles de validation | Simulateur exact | Simulateur idéal (même nb de shots) | **Hardware `ibm_kingston` (corrigé λ)** |
+|---|:---:|:---:|:---:|
+| Noyau quantique seul | 11/12 | 9/12 | 5/12 |
+| **Fusion soumise ($\alpha=0.53$)** | 11/12 | 10/12 | **9/12** |
+| RBF seul (local, référence) | 11/12 | — | — |
+
+* **Les 10 premières parcelles** (jobs 1 et 2, choisies avant l'audit) : la fusion et le RBF y donnent la même réponse en simulation exacte. Sur hardware, la fusion **récupère 3 des 5 erreurs** du noyau seul (parcelles 3, 13 et 34), parce que la branche RBF, exacte, compense les marges bruitées. Les parcelles 0 et 1 restent fausses : le noyau hardware y est confiant et faux, assez pour faire basculer la moyenne.
+* **Les 2 parcelles décisives** (job 3, `dc0onjinj2vs73deb200`). Sur toute la validation, la fusion et le RBF ne divergent en simulation exacte que sur 5 parcelles (35, 38, 55, 67, 138). Avant de lancer le job, nous avons fixé les deux premières : une où la fusion corrige le RBF et une où elle le rend faux.
+  * **Parcelle 35** (blé, que le RBF classe en maïs) : la fusion exacte la corrige en *wheat*. Sur hardware, le noyau mesuré répond *maize* et la fusion suit le RBF : **la correction quantique est perdue**.
+  * **Parcelle 38** (maïs) : la fusion exacte se trompe (*wheat*). Sur hardware, le noyau bruité perd sa confiance et la fusion retombe sur la réponse du RBF, *maize*, qui est juste.
+* **Lecture honnête :** sur hardware, la fusion ne fait jamais mieux que le RBF seul. Sur les 12 parcelles, elle suit la réponse du RBF sauf sur 0 et 1, où elle se trompe. Avec 500–1000 shots, le signal du noyau est noyé dans le bruit ($\lambda \approx 0.7$ et erreur absolue moyenne du noyau corrigé ≈ 0.03, contre 0.01–0.02 pour le simulateur idéal), ce qui est cohérent avec l'étude des shots. Le modèle soumis tourne de bout en bout avec sa branche quantique sur QPU, mais **le gain observé en simulation exacte ne survit pas au bruit du hardware actuel**.
+* Portée : 12 parcelles fixes, c'est un test de faisabilité et non une estimation de précision.
+> 📌 Reproductible sans appel au QPU : `python -m challenge.qk_hardware fusion` (résultat dans `outputs/qk/hardware/fusion_hardware.json`). Pour un nouveau job, `analyze` enregistre désormais aussi les prédictions de la fusion.
 
 ---
 
@@ -148,14 +167,18 @@ Pour déterminer rigoureusement le mélange quantique-classique sans approximati
 </p>
 
 #### Résistance au Bruit Gaussien ($\sigma$) : Modèles Individuels vs Fusion Hybride
-| Bruit ($\sigma$) | Contexte Satellite | Classique Seul (Matched RBF) | Quantique Seul (8-Qubit QK) | **🥇 Fusion Hybride ($\alpha=0.53$)** |
+Bruit $\sigma \times$ écart-type de chaque bande, 5 tirages par niveau. **Design apparié** : les trois modèles voient exactement les mêmes copies bruitées, si bien que les écarts viennent du modèle et non du tirage. (Les chiffres d'une version précédente utilisaient des tirages différents par modèle.)
+
+| Bruit ($\sigma$) | Contexte Satellite | Classique Seul (Matched RBF, $\alpha=0$) | Quantique Seul (8-Qubit QK, $\alpha=1$) | **Fusion Hybride ($\alpha=0.53$)** |
 |:---:|---|:---:|:---:|:---:|
-| **$\sigma = 0.00$** | Données nettes (Clean) | 0.9323 *(140/150)* | 0.9400 *(141/150)* | **0.9533 *(143/150)*** |
-| **$\sigma = 0.05$** | Léger bruit de capteur | 0.8869 | 0.8961 | **0.9085** |
-| **$\sigma = 0.10$** | Voile atmosphérique | 0.8673 | 0.8572 | **0.8629** |
-| **$\sigma = 0.20$** | Brume moyenne | 0.7693 | 0.7517 | **0.7574** |
-| **$\sigma = 0.30$** | Bruit fort (poussière) | 0.6287 | 0.6380 | **0.6517** |
-| **$\sigma = 0.50$** | **Tempête de sable sévère** | **0.4138** *(S'effondre)* | **0.5111** *(Résiste)* | **0.5169** *(Amortit le choc)* |
+| **$\sigma = 0.00$** | Données nettes (Clean) | 0.9323 *(140/150)* | 0.9467 *(142/150)* | **0.9533 *(143/150)*** |
+| **$\sigma = 0.05$** | Léger bruit de capteur | 0.8882 | 0.8975 | 0.8974 |
+| **$\sigma = 0.10$** | Voile atmosphérique | 0.8687 | 0.8599 | 0.8638 |
+| **$\sigma = 0.20$** | Brume moyenne | 0.7619 | 0.7639 | 0.7648 |
+| **$\sigma = 0.30$** | Bruit fort (poussière) | 0.6381 | 0.6639 | 0.6609 |
+| **$\sigma = 0.50$** | **Tempête de sable sévère** | **0.4242** *(s'effondre)* | **0.5261** *(le plus robuste)* | 0.4860 |
+
+* Jusqu'à $\sigma = 0.3$, les trois modèles restent à $\pm 0.03$ les uns des autres. À $\sigma = 0.5$, c'est le **noyau quantique seul** qui résiste le mieux ; la fusion se situe entre les deux.
 
 * **Perte de bande nuageuse (Band drop) :** Les bandes B8 (NIR) et B11/B12 (SWIR) sont les plus critiques pour la discrimination des cultures.
 > 📌 **Script de test de robustesse :** Reproductible via `python -m challenge.fusion`
@@ -187,12 +210,57 @@ Conformément aux pistes d'investigation avancées (`docs/HINTS.md`), nous avons
 
 ---
 
+### 7. Audit de Validation : Optimisme, Incertitude et Part Quantique
+
+Les hyperparamètres du noyau ($a, \gamma, C$), ceux du RBF ($\gamma, C$) et le poids $\alpha$ ont tous été choisis sur **les mêmes 150 parcelles** qui annoncent 0.9533. Ce score est donc une estimation optimiste. Nous avons posé trois questions, avec une expérience pour chacune ([`challenge/validation_audit.py`](challenge/validation_audit.py), résultat dans `outputs/audit/validation_audit.json`).
+
+#### Q1. Que vaut le pipeline si on ne regarde jamais la validation pour choisir ?
+Nous refaisons **tous les choix** (mêmes grilles, même règle de sélection) par validation croisée stratifiée à 5 plis sur les 914 parcelles d'entraînement **uniquement**, puis nous évaluons la validation une seule fois.
+
+| Modèle | Choisi sur la validation (rapporté) | Choisi sur CV train uniquement |
+|---|:---:|:---:|
+| Noyau quantique 8 qubits | 0.9467 (142/150) | 0.8930 (134/150) — $a=0.1, \gamma=0.02, C=100$ |
+| RBF matched | 0.9323 (140/150) | 0.9057 (136/150) — $\gamma=0.113, C=1$ |
+| Jumeau classique $\prod\cos^2$ | 0.9400 (141/150) | 0.9197 (138/150) — $a=0.3, C=10$ |
+| **Fusion QK + RBF** | **0.9533 (143/150)** | 0.8998 (135/150) — $\alpha=0.56$ |
+| Fusion jumeau + RBF | 0.9465 (142/150) | 0.9057 (136/150) — $\alpha=0.01$ |
+
+**Lecture :** tous les modèles perdent 0.03 à 0.05 de F1 lorsqu'aucun choix n'est fait sur la validation, et l'ordre entre eux change. L'entraînement est déséquilibré (425 parcelles de blé sur 914) alors que la validation est équilibrée (50/50/50), et la CV d'entraînement n'est pas groupée spatialement (les groupes ne sont fournis que pour la validation). Elle ne remplace donc pas le test, mais elle montre que **0.9533 dépend des choix faits sur la validation** : il est prudent de s'attendre à un score test inférieur.
+
+#### Q2. Les écarts sont-ils plus grands que le hasard ?
+Bootstrap apparié de la différence de métrique sur les 150 parcelles de validation, 4000 rééchantillonnages, intervalle à 95 %. Nous rééchantillonnons soit les parcelles une par une, soit les **18 blocs spatiaux** entiers (`data/validation_groups.json`), comme le demande `docs/EVALUATION.md`.
+
+| Comparaison (B − A) | Parcelles qui diffèrent | Δ Macro-F1 | IC 95 % par parcelle | IC 95 % par bloc spatial | Δ Rappel blé (IC par bloc) |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Fusion − Noyau quantique | 1 | +0.0065 | [0.000, +0.021] | [0.000, +0.028] | 0 |
+| Fusion − RBF matched | 5 | +0.0209 | [−0.006, +0.054] | [−0.008, +0.064] | **+0.08 [+0.016, +0.20]** |
+| Noyau quantique − RBF matched | 6 | +0.0144 | [−0.017, +0.049] | [−0.021, +0.057] | **+0.08 [+0.016, +0.20]** |
+| Fusion QK − Fusion jumeau classique | 1 | +0.0068 | [0.000, +0.022] | [0.000, +0.027] | +0.02 [0.000, +0.088] |
+| Fusion jumeau − RBF matched | 4 | +0.0142 | [−0.012, +0.043] | [−0.013, +0.050] | +0.06 [0.000, +0.152] |
+
+**Lecture :**
+* Aucune différence de **Macro-F1** n'est démontrée : tous les intervalles touchent ou contiennent zéro. Sur 150 parcelles et 18 blocs, 1 à 6 parcelles d'écart ne suffisent pas.
+* La seule différence statistiquement appuyée est le **rappel du blé** du noyau (et de la fusion) face au RBF : +8 points, avec un intervalle par blocs spatiaux qui exclut zéro. C'est notre résultat principal, formulé honnêtement.
+
+#### Q3. Le gain vient-il du quantique ?
+Avec $\gamma = 0.01$, les portes $RZZ$ sont presque l'identité. Le noyau du circuit est alors très proche de sa forme sans intrication, qui se calcule en une ligne sur un ordinateur portable : $K(x,x') = \prod_i \cos^2\big(a\,(x_i - x'_i)\big)$ (écart mesuré avec le circuit à $\gamma=0$ : $4.8\times10^{-15}$). Nous avons construit ce **jumeau classique** de la fusion, en remplaçant le circuit par cette formule et en gardant le même RBF et le même $\alpha$.
+
+* Le jumeau seul atteint 0.9400 (141/150) et 90 % de rappel sur le blé, contre 0.9467 et 92 % pour le circuit.
+* La fusion jumeau + RBF atteint 0.9465 (142/150), contre 0.9533 (143/150) pour la fusion soumise : **une seule parcelle d'écart**, non significative.
+
+**Conclusion honnête :** le gain sur le blé vient surtout de la **forme du noyau** (un produit de cosinus, périodique et à « bande » réglée par $a$), qui est différente de la gaussienne du RBF. Combiner deux formes de noyau différentes est ce qui aide la fusion. **L'intrication n'apporte pas de gain mesurable sur ces données**, et nous ne revendiquons pas d'avantage quantique. Le circuit reste une manière exacte et exécutable sur QPU d'implémenter ce noyau (voir la section hardware). `docs/EVALUATION.md` le précise : *« Clear negative findings can receive full analysis credit »*.
+
+> 📌 Reproductible en ~1 min : `python -m challenge.validation_audit`
+
+---
+
 ## 🗺️ Organisation du Repository & Navigation
 
 ```
 ├── challenge/
 │   ├── submission.py           # MODÈLE FINAL SOUMIS : Calibrated Decision Fusion (alpha=0.53)
 │   ├── fusion.py               # Preuve de balayage fin alpha (101 pts) & tests de robustesse
+│   ├── validation_audit.py     # Audit : sélection sur CV train, bootstrap apparié spatial, jumeau classique
 │   ├── circuits.py             # Benchmark comparatif de 11 designs de circuits quantiques
 │   ├── qkernel.py              # 8-Qubit Quantum Kernel SVM & Matched RBF Control
 │   ├── models.py               # QNN variationnel starter (L=1,2,3) & MatchedHead (h=1,2,3)
@@ -200,7 +268,7 @@ Conformément aux pistes d'investigation avancées (`docs/HINTS.md`), nous avons
 │   ├── coverage.py             # Script de vérification et d'entraînement par taille (fourni)
 │   ├── data.py                 # Chargeur de données et vérification des checksums (fourni)
 │   ├── qk_run.py               # Grille d'optimisation 80x80 QK et RBF
-│   ├── qk_hardware.py          # Outil CLI de soumission et analyse IBM Hardware
+│   ├── qk_hardware.py          # Outil CLI IBM Hardware (submit / analyze / fusion sur kernels mesurés)
 │   ├── qk_reliability.py       # Protocole de test de robustesse au bruit et band-drop
 │   └── qk_figures.py           # Générateur des figures 1 à 5
 │
@@ -210,7 +278,8 @@ Conformément aux pistes d'investigation avancées (`docs/HINTS.md`), nous avons
 │   └── 03_alternatives_benchmark.ipynb           # BENCHMARK COMPLET : 5 architectures de HINTS.md
 │
 ├── outputs/
-│   ├── qk/                     # Résultats QK, figures 1-5, logs hardware IBM Kingston
+│   ├── qk/                     # Résultats QK, figures 1-5, logs hardware IBM Kingston (+ fusion_hardware.json)
+│   ├── audit/                  # validation_audit.json (optimisme, bootstrap, jumeau classique)
 │   ├── fusion/                 # Résumé JSON de la fusion hybride et ablations
 │   ├── benchmark/              # Résumé JSON du benchmark exhaustif des 5 modèles
 │   └── hybrid_test_predictions.csv  # 221 prédictions test du modèle final soumis
@@ -257,56 +326,19 @@ Et exécuter [`notebooks/Qiskit_QuantumAfrica_Crop_Challenge.ipynb`](notebooks/Q
 
 ---
 
-## 🎨 Génération du Diagramme d'Architecture & Prompt Optimisé
-
-Une fois votre image générée, enregistrez-la simplement sous :  
-📁 `assets/architecture-diagram.png`  
-Elle s'affichera automatiquement dans la section **Architecture Détaillée du Système** ci-dessus.
-
----
-
-### Option A — Prompt Détaillé pour ChatGPT (DALL-E 3), Gemini, Nano Banana ou Leonardo.ai
-
-```text
-A professional scientific architecture diagram and technical pipeline illustration for a quantum-classical hybrid machine learning system, Nature journal publication style.
-Layout: Horizontal left-to-right engineering workflow on a sleek dark navy tech background (#0a0e17).
-
-1. FAR LEFT (Input): A digital Sentinel-2 Earth observation satellite scanning agricultural fields in Morocco. A stream of 13 colorful spectral bands (labeled B1 to B12 and NDVI) emerges from the satellite imagery.
-2. STEP 2 (Feature Engineering): The 13 bands enter a glowing geometric block labeled "Orthogonal PCA(8)" with a subtle variance curve indicating ">97% Information Preserved".
-3. CENTER (Parallel Dual-Branch Processing): The 8 components split into two parallel streams:
-   - TOP STREAM (Quantum Branch, Glowing Neon Violet/Purple #8A2BE2): An 8-qubit quantum circuit schematic with 8 horizontal wire lines, containing Hadamard [H] blocks, [RZ(2ax)] rotation gates, and [RZZ(2γxx)] linear entangling links. It projects data into a multi-dimensional quantum Hilbert sphere (2^8 = 256 dimensions) and outputs a quantum fidelity kernel matrix K_quantum.
-   - BOTTOM STREAM (Classical Branch, Tech Cyan/Teal #00E5FF): An identical 8-component vector entering a classical high-dimensional Gaussian RBF Kernel SVM with clear decision boundaries.
-4. STEP 4 (Decision Convergence): Both prediction confidence streams converge into a central glowing mathematical fusion node labeled "Calibrated Decision Fusion (P = 0.53·P_quantum + 0.47·P_classical)".
-5. FAR RIGHT (Output): Three crisp, elegant agricultural crop classification badges:
-   - Alfalfa (Emerald Green, 96% Recall)
-   - Maize (Vibrant Gold, 98% Recall)
-   - Wheat (Warm Amber, 92% Recall)
-   With an overarching golden performance trophy badge: "95.33% Accuracy | 0.9533 Macro-F1".
-
-Aesthetic: Ultra-clean technical infographic, crisp vector diagrams, sharp glowing connection lines, modern scientific typography, no clutter, high resolution 8k, photorealistic vector diagram.
-```
-
----
-
-### Option B — Prompt Optimisé pour Midjourney v6
-
-```text
-technical scientific architecture schematic of a quantum-classical hybrid machine learning pipeline for satellite crop classification, horizontal workflow, Sentinel-2 satellite 13 bands to PCA reduction block, splitting into 8-qubit quantum circuit with Hadamard and RZZ gates glowing purple and classical RBF SVM glowing cyan, converging into a calibrated softmax decision fusion node, outputting three crop badges alfalfa maize wheat with 95.3% accuracy, dark navy background, Nature scientific illustration style, vector infographic, clean lines, crisp typography, high contrast, 8k resolution --ar 16:9 --style raw --v 6.0
-```
-
----
-
 ## 👥 Team Q³ (Quantum Cubed)
 
 <p align="center">
   <img src="assets/team_logo.png" alt="Team Q³ (Quantum Cubed) Logo" width="130">
 </p>
 
+Le travail s'est fait de manière collaborative. Le tableau indique qui a porté chaque idée principale.
+
 | Membre | Rôle & Contributions | Contact & Profils |
 |---|---|---|
-| **AYOGNIDE Riyadh Akorede Atanda** | Lead Quantum Machine Learning & Hardware Execution | [![Email](https://img.shields.io/badge/Email-riyadhscaler%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:riyadhscaler@gmail.com) [![GitHub](https://img.shields.io/badge/GitHub-riyadh03-181717?logo=github&logoColor=white)](https://github.com/riyadh03) |
-| **Adib ZINDINE** | Quantum Circuit Engineering & Classical Baseline Alignment | [![Email](https://img.shields.io/badge/Email-adibzindine%40outlook.com-0078D4?logo=microsoft-outlook&logoColor=white)](mailto:adibzindine@outlook.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Adib%20Zindine-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/adib-zindine) [![GitHub](https://img.shields.io/badge/GitHub-lilrawry-181717?logo=github&logoColor=white)](https://github.com/lilrawry) |
-| **Aymane KILALI** | Feature Space Optimization & Hybrid Decision Fusion | [![Email](https://img.shields.io/badge/Email-Aymanekilali%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:Aymanekilali@gmail.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Aymane%20Kilali-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aymane-kilali-37053525a/) [![GitHub](https://img.shields.io/badge/GitHub-Aymane--k-181717?logo=github&logoColor=white)](https://github.com/Aymane-k) |
+| **AYOGNIDE Riyadh Akorede Atanda** | **Fusion hybride & benchmark** : idée de la fusion décisionnelle calibrée QK + RBF (le modèle soumis, balayage fin de $\alpha$), benchmark des 5 architectures de `docs/HINTS.md` | [![Email](https://img.shields.io/badge/Email-riyadhscaler%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:riyadhscaler@gmail.com) [![GitHub](https://img.shields.io/badge/GitHub-riyadh03-181717?logo=github&logoColor=white)](https://github.com/riyadh03) |
+| **Adib ZINDINE** | **Noyau quantique** : idée du noyau quantique de fidélité à 8 qubits (QSVM sur PCA(8)), la branche quantique du modèle | [![Email](https://img.shields.io/badge/Email-adibzindine%40outlook.com-0078D4?logo=microsoft-outlook&logoColor=white)](mailto:adibzindine@outlook.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Adib%20Zindine-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/adib-zindine) [![GitHub](https://img.shields.io/badge/GitHub-lilrawry-181717?logo=github&logoColor=white)](https://github.com/lilrawry) |
+| **Aymane KILALI** | **Benchmark des circuits** : exploration des designs de circuit quantique (pistes A–D : feature map, re-uploading, topologie d'intrication, bandwidth ; 11 configurations, `challenge/circuits.py`) | [![Email](https://img.shields.io/badge/Email-Aymanekilali%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:Aymanekilali@gmail.com) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Aymane%20Kilali-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aymane-kilali-37053525a/) [![GitHub](https://img.shields.io/badge/GitHub-Aymane--k-181717?logo=github&logoColor=white)](https://github.com/Aymane-k) |
 
 ---
 

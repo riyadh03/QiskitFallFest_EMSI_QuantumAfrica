@@ -27,13 +27,24 @@
       "shots": 500,
       "circuits": 1337,
       "usage_seconds": 205
+    },
+    {
+      "job_id": "dc0onjinj2vs73deb200",
+      "backend": "ibm_kingston",
+      "fields": [
+        35,
+        38
+      ],
+      "shots": 500,
+      "circuits": 382,
+      "usage_seconds": 60
     }
   ],
-  "fields": 10,
-  "device_seconds": 381,
+  "fields": 12,
+  "device_seconds": 441,
   "correct": {
-    "exact": 10,
-    "ideal_shots": 7,
+    "exact": 11,
+    "ideal_shots": 9,
     "hardware_raw": 5,
     "hardware_corrected": 5
   },
