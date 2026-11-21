@@ -135,8 +135,43 @@ Pour déterminer rigoureusement le mélange quantique-classique sans approximati
   <img src="outputs/qk/fig5_reliability.png" alt="Figure 5: Perturbation robustness under Gaussian noise and band drop" width="850">
 </p>
 
-* **Bruit Gaussien ($\sigma \in [0.0, 0.5]$) :** La fusion hybride amortit l'effondrement classique à fort bruit, maintenant **0.7815** à $\sigma = 0.5$.
-* **Perte de bande nuageuse (Band drop) :** Les bandes B8 (NIR) et B11 (SWIR) sont les plus critiques pour la discrimination des cultures.
+#### Résistance au Bruit Gaussien ($\sigma$) : Modèles Individuels vs Fusion Hybride
+| Bruit ($\sigma$) | Contexte Satellite | Classique Seul (Matched RBF) | Quantique Seul (8-Qubit QK) | **🥇 Fusion Hybride ($\alpha=0.53$)** |
+|:---:|---|:---:|:---:|:---:|
+| **$\sigma = 0.00$** | Données nettes (Clean) | 0.9323 *(140/150)* | 0.9400 *(141/150)* | **0.9533 *(143/150)*** |
+| **$\sigma = 0.05$** | Léger bruit de capteur | 0.8869 | 0.8961 | **0.9085** |
+| **$\sigma = 0.10$** | Voile atmosphérique | 0.8673 | 0.8572 | **0.8629** |
+| **$\sigma = 0.20$** | Brume moyenne | 0.7693 | 0.7517 | **0.7574** |
+| **$\sigma = 0.30$** | Bruit fort (poussière) | 0.6287 | 0.6380 | **0.6517** |
+| **$\sigma = 0.50$** | **Tempête de sable sévère** | **0.4138** *(S'effondre)* | **0.5111** *(Résiste)* | **0.5169** *(Amortit le choc)* |
+
+* **Perte de bande nuageuse (Band drop) :** Les bandes B8 (NIR) et B11/B12 (SWIR) sont les plus critiques pour la discrimination des cultures.
+> 📌 **Script de test de robustesse :** Reproductible via `python -m challenge.fusion`
+
+---
+
+### 6. Exploration & Benchmark du Design de Circuit Quantique (Pistes A, B, C, D)
+
+Conformément aux pistes d'investigation avancées (`docs/HINTS.md`), nous avons systématiquement benchmarké 11 configurations architecturales du circuit quantique :
+
+| Piste | Configuration Circuit | QK Macro-F1 | **Hybrid F1** | **Accuracy Fusion** | Rappel Blé | Constat & Analyse |
+|---|---|:---:|:---:|:---:|:---:|---|
+| **Référence** | **Chaîne Linéaire ($a=0.2, \gamma=0.01, \text{reps}=1$)** | **0.9400** | **0.9533** | **95.33% (143/150)** | **92%** | **Optimum global de précision et de frugalité (7 portes RZZ)** |
+| **A. Feature Map** | Qiskit `ZZFeatureMap` standard (linear) | 0.3161 ❌ | 0.6283 ❌ | 64.00% | 96% (Maïs=36%) | Repliement de phase modulo $2\pi$ en l'absence de scaling $a$ |
+| **A. Feature Map** | Custom $RY(x)RX(x) + RZZ$ | 0.9127 | 0.9056 | 90.67% | 82% | Sur-rotation réduisant la séparabilité inter-classes |
+| **B. Re-uploading** | 2 couches d'encodage + mélange $RY(\pi/4)$ | 0.9327 | 0.9327 | 93.33% | 86% | Concentration de mesure diminuant le contraste des fidélités |
+| **C. Topologie** | **Circulaire / Ring (anneau fermé, 8 portes)** | **0.9400** | **0.9533** | **95.33% (143/150)** | **92%** | Égale la chaîne linéaire (corrélation circulaire valide) |
+| **C. Topologie** | Complète / All-to-All (28 portes RZZ) | 0.9400 | 0.9465 ⚠️ | 94.67% | 90% | **Sur-intrication** dégradant le rappel du Blé |
+| **C. Topologie** | Sans Intrication (Produit tensoriel, $\gamma=0$) | 0.9400 | 0.9465 ⚠️ | 94.67% | 90% | Équivalent à la forme fermée classique $\prod \cos^2(a \Delta x)$ |
+| **D. Bandwidth** | Échelle d'angle contractée ($a=0.05$) | 0.9056 | 0.9121 | 91.33% | 82% | Angles trop petits (produits scalaires tassés près de 1.0) |
+| **D. Bandwidth** | Échelle d'angle excessive ($a=0.40$) | 0.9192 | 0.9192 | 92.00% | 84% | Oscillations rapides perdant la cohérence géométrique |
+
+> 📌 **Script de Benchmark de Circuit Indépendant :**  
+> L'ensemble du banc d'essai comparatif est implémenté dans [`challenge/circuits.py`](challenge/circuits.py) (résultats sauvegardés dans `outputs/circuit_benchmark.json`).  
+> Pour reproduire ce comparatif complet :  
+> ```bash
+> python -m challenge.circuits
+> ```
 
 ---
 
@@ -145,6 +180,8 @@ Pour déterminer rigoureusement le mélange quantique-classique sans approximati
 ```
 ├── challenge/
 │   ├── submission.py           # MODÈLE FINAL SOUMIS : Calibrated Decision Fusion (alpha=0.53)
+│   ├── fusion.py               # Preuve de balayage fin alpha (101 pts) & tests de robustesse
+│   ├── circuits.py             # Benchmark comparatif de 11 designs de circuits quantiques
 │   ├── qkernel.py              # 8-Qubit Quantum Kernel SVM & Matched RBF Control
 │   ├── models.py               # QNN variationnel starter (L=1,2,3) & MatchedHead (h=1,2,3)
 │   ├── classical.py            # Modèle de référence SVM baseline (fourni)
