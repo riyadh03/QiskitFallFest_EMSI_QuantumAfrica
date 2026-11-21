@@ -82,8 +82,11 @@ Our team implemented and benchmarked **all 5 core architectural paradigms** sugg
   <img src="outputs/qk/fig2_confusion.png" alt="Figure 2: Confusion matrices showing classical bias and quantum correction" width="850">
 </p>
 
-* **Biais Classique :** Le RBF classique confond 8 parcelles de Blé (7 avec le maïs, 1 avec la luzerne), tombant à 84% de rappel.
-* **Correction Quantique & Fusion :** L'espace de Hilbert quantique de dimension $2^8 = 256$ résout l'ambiguïté spectrale et remonte le rappel du Blé à 92%. La fusion hybride équilibre l'ensemble à **96% Luzerne, 96% Maïs, 92% Blé**.
+* **Biais Classique sur le Blé (84% de rappel dans les deux modèles classiques) :**
+  * Dans le **RBF de référence (13 bandes brutes, matrice de droite)** : la dernière ligne affiche exactement **`[4, 4, 42]`** — il confond 4 parcelles de blé avec la luzerne et 4 avec le maïs (42/50 correctes = **84%**).
+  * Dans le **RBF matched (8 PCA, matrice du milieu)** : la dernière ligne affiche **`[2, 6, 42]`** — il confond 6 parcelles de blé avec le maïs et 2 avec la luzerne (42/50 correctes = **84%**).
+* **Correction Quantique (matrice de gauche) :** La dernière ligne passe à **`[1, 3, 46]`** — le Quantum Kernel ne rate que 4 parcelles au lieu de 8, propulsant le rappel du Blé à **92%** (46/50).
+* **Fusion Hybride (notre soumission) :** Équilibre l'ensemble avec **96% Luzerne, 96% Maïs et 92% Blé**, garantissant qu'aucune classe n'est sacrifiée.
 
 ---
 
