@@ -72,6 +72,42 @@ def grouped_recall(rows, title, height=380):
     return fig
 
 
+def architecture(height=430):
+    """Submitted pipeline (challenge/submission.py) as an editable Plotly diagram; the dashed frame marks what ran on IBM."""
+    fig = go.Figure()
+    # (x0, y0, x1, y1, colour, title, subtitle)
+    boxes = [
+        (0.0, 3.7, 1.7, 6.3, T.SLATE, '13 features', 'Sentinel-2<br>12 bands + NDVI'),
+        (2.1, 3.7, 4.1, 6.3, T.SLATE, 'Shared encoder', 'Scaler → PCA(8) → Scaler<br>fit on 914 training fields'),
+        (4.6, 5.6, 7.3, 9.4, T.QUANTUM, '8-qubit feature map', 'H · RZ(2a·xᵢ) · RZZ(2γ·xᵢxᵢ₊₁)<br>a = 0.2, γ = 0.01, depth 9'),
+        (7.7, 5.6, 9.9, 9.4, T.QUANTUM, 'Fidelity kernel', 'K = |⟨ψ(x)|ψ(x′)⟩|²<br>→ SVM (C = 100)'),
+        (4.6, 0.6, 9.9, 4.4, T.CLASSICAL, 'Classical branch', 'RBF kernel (γ = 0.113) → SVM (C = 10)<br>same 8 components'),
+        (10.4, 3.2, 12.7, 6.8, T.HYBRID, 'Decision fusion', 'α·softmax(d<sub>QK</sub>)<br>+ (1−α)·softmax(d<sub>RBF</sub>)<br>α = 0.53'),
+        (13.2, 3.7, 14.8, 6.3, T.NAVY, 'Prediction', 'alfalfa<br>maize · wheat'),
+    ]
+    for x0, y0, x1, y1, c, t, s in boxes:
+        fig.add_shape(type='rect', x0=x0, y0=y0, x1=x1, y1=y1, line=dict(color=c, width=2),
+                      fillcolor=_hex_rgba(c, 0.07), layer='below')
+        fig.add_annotation(x=(x0 + x1) / 2, y=y1 - 0.55, text=f'<b>{t}</b>', showarrow=False,
+                           font=dict(size=14, color=c))
+        fig.add_annotation(x=(x0 + x1) / 2, y=(y0 + y1) / 2 - 0.45, text=s, showarrow=False,
+                           font=dict(size=11.5, color=T.NAVY))
+    # QPU frame around the quantum branch
+    fig.add_shape(type='rect', x0=4.4, y0=5.3, x1=10.1, y1=10.3, line=dict(color=T.HARDWARE, width=1.5, dash='dash'))
+    fig.add_annotation(x=7.25, y=9.95, text='Kernel rows also measured on IBM ibm_kingston (inference only)',
+                       showarrow=False, font=dict(size=11, color=T.HARDWARE))
+    arrows = [((1.7, 5.0), (2.1, 5.0), T.SLATE), ((4.1, 5.6), (4.6, 7.5), T.QUANTUM), ((4.1, 4.4), (4.6, 2.5), T.CLASSICAL),
+              ((7.3, 7.5), (7.7, 7.5), T.QUANTUM), ((9.9, 7.5), (10.4, 6.0), T.QUANTUM),
+              ((9.9, 2.5), (10.4, 4.0), T.CLASSICAL), ((12.7, 5.0), (13.2, 5.0), T.HYBRID)]
+    for (x0, y0), (x1, y1), c in arrows:
+        fig.add_annotation(x=x1, y=y1, ax=x0, ay=y0, xref='x', yref='y', axref='x', ayref='y', showarrow=True,
+                           arrowhead=3, arrowsize=1.2, arrowwidth=2, arrowcolor=c, text='')
+    fig.update_xaxes(visible=False, range=[-0.2, 15.0])
+    fig.update_yaxes(visible=False, range=[0.2, 10.6])
+    fig.update_layout(height=height, margin=dict(l=4, r=4, t=8, b=4), showlegend=False, dragmode=False)
+    return fig
+
+
 def lines(series, title, xaxis, yaxis, height=380, yrange=None, xvals=None):
     """series: list of dicts(key, x, y, sd=None, dash=None, label=None). Plain lines; sd only in the hover."""
     fig = go.Figure()

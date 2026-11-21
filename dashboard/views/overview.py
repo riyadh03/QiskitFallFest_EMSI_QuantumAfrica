@@ -11,6 +11,10 @@ st.title('Quantum Cube CropLab')
 st.markdown('<p class="cl-lead">Classifying <b>alfalfa, maize and wheat</b> fields in Doukkala, Morocco, from 13 '
             'Sentinel-2 features — with quantum, classical and hybrid models.</p>', unsafe_allow_html=True)
 
+arch = D.asset('assets/architecture-diagram.png')
+if arch:
+    st.image(arch, width='stretch')
+
 manifest = D.load('manifest') or {}
 rows = manifest.get('rows', {})
 fm = ((D.load('export') or {}).get('fusion') or {}).get('metrics') or {}
