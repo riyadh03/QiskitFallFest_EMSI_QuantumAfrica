@@ -144,7 +144,7 @@ Pour déterminer rigoureusement le mélange quantique-classique sans approximati
 
 ```
 ├── challenge/
-│   ├── submission.py           # MODÈLE FINAL SOUMIS : Calibrated Decision Fusion (alpha=0.55)
+│   ├── submission.py           # MODÈLE FINAL SOUMIS : Calibrated Decision Fusion (alpha=0.53)
 │   ├── qkernel.py              # 8-Qubit Quantum Kernel SVM & Matched RBF Control
 │   ├── models.py               # QNN variationnel starter (L=1,2,3) & MatchedHead (h=1,2,3)
 │   ├── classical.py            # Modèle de référence SVM baseline (fourni)
@@ -196,7 +196,7 @@ python -m challenge.coverage check
 
 ### 3. Exécuter le modèle soumis
 ```bash
-python -c "from challenge.submission import Submission; sub = Submission(); print('Modèle prêt : Calibrated Decision Fusion 55% QK + 45% RBF')"
+python -c "from challenge.submission import Submission; sub = Submission(); print('Modèle prêt : Calibrated Decision Fusion 53% QK + 47% RBF (alpha=0.53)')"
 ```
 
 ### 4. Consulter les notebooks
@@ -218,7 +218,7 @@ On the left: Sentinel-2 satellite imagery of Moroccan agricultural crop fields, 
 In the center: The pipeline splits into two parallel streams:
 - Stream A (Top, Glowing Purple): An 8-qubit quantum circuit diagram with Hadamard gates, RZ rotation gates, and subtle RZZ entangling links, projecting data into a 256-dimensional quantum Hilbert space, computing a quantum fidelity kernel matrix.
 - Stream B (Bottom, Tech Orange/Cyan): A classical high-dimensional RBF Gaussian kernel support vector machine.
-On the right: The two decision margins converge into a calibrated Softmax Decision Fusion node with weights alpha=0.55 and (1-alpha)=0.45.
+On the right: The two decision margins converge into a calibrated Softmax Decision Fusion node with weights alpha=0.53 and (1-alpha)=0.47.
 Final output on the far right: Crisp classification badges showing three vibrant agricultural crops (Alfalfa, Maize, Wheat) with a balanced >=90% recall badge and a digital Moroccan map overlay in the subtle background.
 Style: Sleek modern scientific infographic, clean lines, dark academic background, glowing quantum cybernetics, publication-ready Nature/IEEE format, vector aesthetic, 8k resolution.
 ```

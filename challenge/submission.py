@@ -5,7 +5,7 @@ Architecture:
   PCA(8) → fidelity kernel → SVM (C=100, a=0.2, gamma=0.01, reps=1)
 - Matched Classical RBF SVM (same PCA(8) representation)
   PCA(8) → RBF kernel → SVM (C=10, gamma=0.113)
-- Decision-level calibrated fusion: P = 0.55 * Softmax(d_QK) + 0.45 * Softmax(d_RBF)
+- Decision-level calibrated fusion: P = 0.53 * Softmax(d_QK) + 0.47 * Softmax(d_RBF)
 
 Results (150-field validation set):
 - Quantum Kernel alone:    Macro-F1 = 0.9400, Accuracy = 94.00%
