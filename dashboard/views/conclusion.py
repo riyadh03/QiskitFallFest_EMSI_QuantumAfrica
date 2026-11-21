@@ -15,6 +15,11 @@ hws = D.load('hw_summary') or {}
 shots = D.load('shots')
 reports = D.hardware_reports()
 
+# ---------------------------------------------------------------- architecture
+arch = D.asset('assets/architecture-diagram.png')
+if arch:
+    st.image(arch, width='stretch')
+
 # ---------------------------------------------------------------- findings
 c = st.columns(3)
 with c[0]:
@@ -57,16 +62,6 @@ with right:
                           yaxis_range=[0.85, 0.98], height=330, legend=CH.LEGEND, margin=dict(l=56, r=16, t=48, b=20))
         st.plotly_chart(fig, width='stretch')
         st.caption('Expect a lower test score than 0.953.')
-
-st.markdown('##### Final architecture')
-C.flow([
-    ('13 features', 'B1–B12, B8A, NDVI', T.SLATE),
-    ('PCA(8)', 'scaler → PCA → scaler', T.SLATE),
-    ('Quantum branch', '8 qubits · fidelity kernel · SVM', T.QUANTUM),
-    ('Classical branch', 'RBF kernel · SVM', T.CLASSICAL),
-    ('Fusion', '0.53·softmax(d<sub>QK</sub>) + 0.47·softmax(d<sub>RBF</sub>)', T.HYBRID),
-    ('Crop', 'alfalfa · maize · wheat', T.NAVY),
-])
 
 # ---------------------------------------------------------------- hardware
 st.markdown('##### IBM Quantum hardware')
