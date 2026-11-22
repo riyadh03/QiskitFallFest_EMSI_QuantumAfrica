@@ -1,4 +1,4 @@
-"""Quantum Cube CropLab — interactive research explorer for the Moroccan Crop Classification Challenge.
+"""Q³ CropLab — interactive research explorer for the Moroccan Crop Classification Challenge.
 
 Launch from the repository root:
     streamlit run dashboard/app.py
@@ -11,7 +11,7 @@ import streamlit as st
 from components import theme
 from utils import data as D
 
-st.set_page_config(page_title='Quantum Cube CropLab', page_icon='🌾', layout='wide',
+st.set_page_config(page_title='Q³ CropLab', page_icon='🌾', layout='wide',
                    initial_sidebar_state='expanded')
 theme.apply()
 
@@ -28,7 +28,7 @@ with st.sidebar:
     logo = D.asset('assets/team_logo.png')
     if logo:
         st.image(logo, width=92)
-    st.markdown('### Quantum Cube CropLab')
+    st.markdown('### Q³ CropLab')
     st.caption('Moroccan Crop Classification Challenge · Qiskit Fall Fest · EMSI · Quantum Africa')
 
 nav = st.navigation(pages, position='sidebar')

@@ -1,7 +1,7 @@
 <p align="center">
   <img src="assets/emsi-logo.webp" alt="EMSI — École Marocaine des Sciences de l’Ingénieur" height="58">
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/team_logo.png" alt="Team Q³ (Quantum Cube)" height="68">
+  <img src="assets/team_logo.png" alt="Team Q³ · Quantum Cubeb" height="68">
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/quantum-africa-logo.png" alt="Quantum Africa" height="58">
 </p>
@@ -9,8 +9,9 @@
 <p align="center"><b>English</b> · <a href="README.fr.md">Français</a></p>
 
 # Moroccan Crop Classification Challenge
-### Qiskit Fall Fest · EMSI · Quantum Africa — Team **Q³ (Quantum Cube)**
+### Qiskit Fall Fest · EMSI · Quantum Africa — Team **Q³ · Quantum Cubeb**
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://q3-croplab.streamlit.app/)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Qiskit](https://img.shields.io/badge/qiskit-2.x-613399.svg)](https://www.ibm.com/quantum/qiskit)
 [![IBM Quantum](https://img.shields.io/badge/IBM%20hardware-ibm__kingston-0062ff.svg)](#4-ibm-quantum-hardware)
@@ -171,9 +172,13 @@ No macro-F1 difference is established; the wheat-recall gain is.
 
 ---
 
-## Interactive results explorer — Quantum Cube CropLab
+## Interactive results explorer — Q³ CropLab
 
 A Streamlit application presents every experiment, both benchmarks, the robustness tests and the IBM hardware run. It only reads saved results; it never retrains a model or runs a circuit.
+
+**Live app: [https://q3-croplab.streamlit.app/](https://q3-croplab.streamlit.app/)**
+
+To run it locally:
 
 ```bash
 pip install -r dashboard/requirements.txt
@@ -197,7 +202,7 @@ streamlit run dashboard/app.py
 │   ├── qk_figures.py         # Figures 1–5
 │   ├── models.py             # Starter QNN and matched MLP control
 │   ├── classical.py, coverage.py, data.py, metrics.py   # Supplied by the organizers
-├── dashboard/                # Streamlit app (Quantum Cube CropLab)
+├── dashboard/                # Streamlit app (Q³ CropLab)
 ├── notebooks/                # Main notebook, fusion study, alternatives benchmark
 ├── outputs/                  # Saved results, figures and IBM hardware reports
 ├── configs/                  # Final hyper-parameters
@@ -231,7 +236,7 @@ The main notebook is [`notebooks/Qiskit_QuantumAfrica_Crop_Challenge.ipynb`](not
 
 ---
 
-## Team Q³ (Quantum Cube)
+## Team Q³ · Quantum Cubeb
 
 | Member | Contact |
 |---|---|

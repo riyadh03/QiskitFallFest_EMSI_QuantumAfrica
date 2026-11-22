@@ -135,6 +135,6 @@ with c1:
     if logo:
         st.image(logo, width=90)
 with c2:
-    st.markdown('**Quantum Cube** — representation and kernel choice matter more than the circuit; the quantum kernel '
+    st.markdown('**Q³ · Quantum Cubeb** — representation and kernel choice matter more than the circuit; the quantum kernel '
                 'fixes wheat, and today\'s hardware noise erases the gain.')
     st.caption('Qiskit Fall Fest · EMSI · Quantum Africa · Data: Ouassanouan et al., Figshare v2, CC BY 4.0.')

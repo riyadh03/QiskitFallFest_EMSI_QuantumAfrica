@@ -6,8 +6,8 @@ from components import charts as CH
 from components import theme as T
 from utils import data as D
 
-st.markdown('<div class="cl-eyebrow">Quantum Cube</div>', unsafe_allow_html=True)
-st.title('Quantum Cube CropLab')
+st.markdown('<div class="cl-eyebrow">Q³ · Quantum Cubeb</div>', unsafe_allow_html=True)
+st.title('Q³ CropLab')
 st.markdown('<p class="cl-lead">Classifying <b>alfalfa, maize and wheat</b> fields in Doukkala, Morocco, from 13 '
             'Sentinel-2 features — with quantum, classical and hybrid models.</p>', unsafe_allow_html=True)
 
