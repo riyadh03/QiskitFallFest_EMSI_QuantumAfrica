@@ -7,3 +7,5 @@ __pycache__/
 *.key
 .qiskit/
 .DS_Store
+# Office lock files (created while a document is open)
+~$*

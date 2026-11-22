@@ -1,0 +1,7 @@
+# Dependencies for the Quantum Cube CropLab dashboard only (Streamlit Community Cloud reads this file
+# because it sits next to the entrypoint dashboard/app.py). The app reads saved results and never imports
+# Qiskit or retrains a model, so the full research stack in ../requirements.txt is not needed here.
+streamlit==1.67.0
+plotly==7.1.0
+pandas>=2.2,<4
+numpy>=1.26,<3
